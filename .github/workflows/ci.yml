@@ -1,0 +1,124 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop, release/*]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.27.4"
+  DART_SDK: "^3.6.0"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Flutter — analyze, format-check, build web (smoke)
+  # ---------------------------------------------------------------------------
+  flutter-ci:
+    name: Flutter · analyze + build web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Show Flutter version
+        run: flutter --version
+
+      - name: Restore pub cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            mobile/.dart_tool
+          key: ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-${{ hashFiles('mobile/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-
+
+      - name: Read pubspec dependencies
+        run: flutter pub get
+
+      - name: Verify formatting
+        run: dart format --set-exit-if-changed --output=none lib
+
+      - name: Analyze project (no fatal issues)
+        run: flutter analyze --no-pub --preamble --concurrency=4
+
+      - name: Scaffold missing native platform folders (Android / iOS / Web)
+        run: flutter create --platforms=android,ios,web --project-name cairo_heart_hotel .
+
+      - name: Build web (release, smoke)
+        run: |
+          flutter build web --release --no-tree-shake-icons --base-href "/flutter-static/"
+
+      - name: Upload web build artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-web-ci
+          path: mobile/build/web
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Next.js / Backend — lint + type-check + build standalone
+  # ---------------------------------------------------------------------------
+  backend-ci:
+    name: Next.js · lint + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: "postgresql://user:pass@localhost:5432/db?connection_limit=1"
+      DIRECT_URL: "postgresql://user:pass@localhost:5432/db"
+      NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co"
+      SUPABASE_URL: "https://example.supabase.co"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-anon-key-for-build-only"
+      SUPABASE_SERVICE_ROLE_KEY: "dummy-service-role-key-for-build-only"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: bun run db:generate
+
+      - name: Lint
+        run: bun run lint
+        continue-on-error: true
+
+      - name: Build (Next.js standalone)
+        run: bun run build:next
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"

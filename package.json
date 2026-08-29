@@ -1,10 +1,12 @@
 {
-  "name": "nextjs_tailwind_shadcn_ts",
-  "version": "0.2.1",
+  "name": "cairo-heart-hotel",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "unset DATABASE_URL; unset DIRECT_URL; next dev -p 3000 2>&1 | tee dev.log",
-    "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "build:flutter": "cd mobile && flutter build web --release --base-href \"/flutter-static/\" && rm -rf ../public/flutter-static && cp -r build/web ../public/flutter-static",
+    "build:next": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
+    "build": "bun run build:flutter && bun run build:next",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
     "db:push": "prisma db push --accept-data-loss",

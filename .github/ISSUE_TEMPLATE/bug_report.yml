@@ -1,0 +1,30 @@
+---
+name: Bug report
+about: Report a defect in Cairo Heart Hotel
+title: "[BUG] "
+labels: bug, triage
+assignees: ''
+---
+
+## Summary
+<!-- One-sentence description of the bug -->
+
+## Steps to reproduce
+1.
+2.
+3.
+
+## Expected behavior
+<!-- What should happen -->
+
+## Actual behavior
+<!-- What actually happens, with stack trace / error message if available -->
+
+## Environment
+- Platform: <!-- iOS / Android / Web -->
+- OS / version:
+- App version: <!-- e.g. v1.0.0 -->
+- Backend URL:
+
+## Attachments
+<!-- Screenshots, screen recordings, log files -->

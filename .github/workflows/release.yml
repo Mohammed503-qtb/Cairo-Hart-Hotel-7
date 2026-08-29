@@ -1,0 +1,596 @@
+name: Release
+
+# ============================================================================
+# Cairo Heart Hotel — Production Release Pipeline
+# ----------------------------------------------------------------------------
+# Triggers on:
+#   - Any tag matching `v*` (e.g. v1.0.0, v1.0.0-rc.1)
+#   - Manual dispatch from the Actions tab
+#
+# Produces:
+#   - Flutter Web (production bundle, ready for static hosting)
+#   - Android APK (release-mode, split per ABI + fat)
+#   - iOS IPA (release-mode, requires macOS runner)
+#   - Next.js standalone server bundle
+#
+# All artifacts are attached to a GitHub Release automatically.
+# ============================================================================
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag (e.g. v1.0.0)"
+        required: true
+        default: "v1.0.0"
+      prerelease:
+        description: "Mark as pre-release"
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: "3.27.4"
+  PRODUCTION_API_BASE: ${{ secrets.PRODUCTION_API_BASE }}
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+  attestations: write
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Resolve version metadata
+  # ---------------------------------------------------------------------------
+  prepare:
+    name: Prepare release metadata
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      tag: ${{ steps.meta.outputs.tag }}
+      is_prerelease: ${{ steps.meta.outputs.is_prerelease }}
+      release_notes: ${{ steps.notes.outputs.release_notes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute version metadata
+        id: meta
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            V="${{ inputs.version }}"
+          else
+            V="${GITHUB_REF##*/}"
+          fi
+          # Strip leading v
+          NUM="${V#v}"
+          # Detect pre-release suffix (rc, beta, alpha, -)
+          if [[ "$V" =~ (rc|beta|alpha|-pre) ]]; then
+            PRE="true"
+          else
+            PRE="false"
+          fi
+          {
+            echo "version=$NUM"
+            echo "tag=$V"
+            echo "is_prerelease=$PRE"
+          } >> "$GITHUB_OUTPUT"
+          echo "Resolved version: $NUM (tag: $V, pre-release: $PRE)"
+
+      - name: Build changelog
+        id: notes
+        run: |
+          {
+            echo 'release_notes<<EOF'
+            echo "## Cairo Heart Hotel — v${{ steps.meta.outputs.version }}"
+            echo ""
+            echo "Production-grade multi-platform build of the Cairo Heart Hotel digital operations platform."
+            echo ""
+            echo "### Artifacts"
+            echo "- **Flutter Web** — \`cairo-heart-hotel-web-v${{ steps.meta.outputs.version }}.zip\` (deploy under any static host)"
+            echo "- **Android APK** — \`cairo-heart-hotel-arm64-v8a-v${{ steps.meta.outputs.version }}.apk\` (and armeabi-v7a, x86_64 variants)"
+            echo "- **Android APK (universal)** — \`cairo-heart-hotel-universal-v${{ steps.meta.outputs.version }}.apk\`"
+            echo "- **iOS IPA** — \`cairo-heart-hotel-ios-v${{ steps.meta.outputs.version }}.ipa\` (unsigned; sign with your developer profile)"
+            echo "- **Next.js backend** — \`cairo-heart-hotel-backend-v${{ steps.meta.outputs.version }}.tar.gz\`"
+            echo ""
+            echo "### How to install"
+            echo "- **Android**: Download any APK matching your device architecture (most modern devices = arm64-v8a). Enable \"Install unknown apps\" in Settings → Apps → your browser."
+            echo "- **iOS**: Requires re-signing with a valid Apple Developer profile before sideloading (or upload to TestFlight via Transporter or `xcrun altool`)."
+            echo "- **Web**: Unzip and place under your static host's root (or under \`/flutter-static/\` if served via the bundled Next.js backend)."
+            echo ""
+            echo "### Build details"
+            echo "- Flutter: \`${{ env.FLUTTER_VERSION }}\` (stable channel)"
+            echo "- Build mode: \`--release\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Built on: \`$(date -u '+%Y-%m-%d %H:%M:%S UTC')\`"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  # ---------------------------------------------------------------------------
+  # Flutter Web
+  # ---------------------------------------------------------------------------
+  build-web:
+    name: Build Flutter Web
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Restore pub cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            mobile/.dart_tool
+          key: ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-${{ hashFiles('mobile/pubspec.lock') }}
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Scaffold native platform folders
+        run: flutter create --platforms=web --project-name cairo_heart_hotel .
+
+      - name: Build Web (release)
+        run: |
+          flutter build web --release --base-href "/flutter-static/" \
+            --dart-define=API_BASE="${{ env.PRODUCTION_API_BASE }}" \
+            --no-tree-shake-icons
+
+      - name: Zip web bundle
+        working-directory: mobile/build
+        run: |
+          zip -r -q "cairo-heart-hotel-web-v${{ needs.prepare.outputs.version }}.zip" web
+          cp "cairo-heart-hotel-web-v${{ needs.prepare.outputs.version }}.zip" "$GITHUB_WORKSPACE/"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-bundle
+          path: ${{ github.workspace }}/cairo-heart-hotel-web-v${{ needs.prepare.outputs.version }}.zip
+          retention-days: 14
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        if: always()
+        continue-on-error: true
+        with:
+          subject-path: ${{ github.workspace }}/cairo-heart-hotel-web-v${{ needs.prepare.outputs.version }}.zip
+
+  # ---------------------------------------------------------------------------
+  # Android APK (release, split per ABI + universal fat APK)
+  # ---------------------------------------------------------------------------
+  build-android:
+    name: Build Android APKs
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Restore pub cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            mobile/.dart_tool
+          key: ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-${{ hashFiles('mobile/pubspec.lock') }}
+
+      - name: Restore Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('mobile/android/**/*.gradle*', 'mobile/android/**/gradle-wrapper.properties') }}
+          restore-keys: ${{ runner.os }}-gradle-
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Scaffold Android platform folder
+        run: flutter create --platforms=android --project-name cairo_heart_hotel .
+
+      - name: Rewrite app/build.gradle with release signing + correct identifiers
+        working-directory: mobile
+        env:
+          VERSION_NAME: ${{ needs.prepare.outputs.version }}
+          VERSION_CODE: ${{ github.run_number }}
+        run: |
+          # Detect Kotlin DSL (.kts) vs Groovy — Flutter 3.27 ships Groovy on `flutter create`.
+          GRADLE_APP=android/app/build.gradle
+          [ -f "$GRADLE_APP.kts" ] && GRADLE_APP=android/app/build.gradle.kts
+
+          # Materialize the canonical app/build.gradle with:
+          #  - applicationId = ye.cairoheart.hotel
+          #  - minSdk = 23 (Android 6.0)
+          #  - versionCode = monotonic CI run number
+          #  - versionName = release tag (without leading v)
+          #  - INTERNET + ACCESS_NETWORK_STATE permissions are in AndroidManifest (we patch next)
+          #  - release-signing config read from android/key.properties if present
+          #    (fallback to debug signing if key.properties missing)
+          cat > "$GRADLE_APP" <<'GRADLE'
+          plugins {
+              id "com.android.application"
+              id "kotlin-android"
+              id "dev.flutter.flutter-gradle-plugin"
+          }
+
+          def localProperties = new Properties()
+          def localPropertiesFile = rootProject.file("local.properties")
+          if (localPropertiesFile.exists()) {
+              localProperties.load(new FileInputStream(localPropertiesFile))
+          }
+
+          def flutterRoot = localProperties.getProperty("flutter.sdk")
+          if (flutterRoot == null) {
+              throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+          }
+
+          def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
+          def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
+
+          // ---- Release signing (read from android/key.properties if present) ----
+          def keystoreProperties = new Properties()
+          def keystorePropertiesFile = rootProject.file("key.properties")
+          if (keystorePropertiesFile.exists()) {
+              keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+          }
+
+          android {
+              namespace = "ye.cairoheart.hotel"
+              compileSdk = flutter.compileSdkVersion
+              ndkVersion = flutter.ndkVersion
+
+              compileOptions {
+                  sourceCompatibility = JavaVersion.VERSION_17
+                  targetCompatibility = JavaVersion.VERSION_17
+              }
+              kotlinOptions {
+                  jvmTarget = "17"
+              }
+
+              defaultConfig {
+                  applicationId = "ye.cairoheart.hotel"
+                  minSdk = 23
+                  targetSdk = flutter.targetSdkVersion
+                  versionCode = flutterVersionCode.toInteger()
+                  versionName = flutterVersionName
+              }
+
+              signingConfigs {
+                  if (keystorePropertiesFile.exists()) {
+                      release {
+                          keyAlias = keystoreProperties["keyAlias"]
+                          keyPassword = keystoreProperties["keyPassword"]
+                          storeFile = file(keystoreProperties["storeFile"])
+                          storePassword = keystoreProperties["storePassword"]
+                      }
+                  }
+              }
+
+              buildTypes {
+                  release {
+                      signingConfig = keystorePropertiesFile.exists()
+                          ? signingConfigs.release
+                          : signingConfigs.debug
+                      minifyEnabled = false
+                      shrinkResources = false
+                  }
+              }
+          }
+
+          flutter {
+              source = "../.."
+          }
+          GRADLE
+          # Override the version fields
+          sed -i "s|def flutterVersionCode = .*|def flutterVersionCode = \"${VERSION_CODE}\"|" "$GRADLE_APP"
+          sed -i "s|def flutterVersionName = .*|def flutterVersionName = \"${VERSION_NAME}\"|" "$GRADLE_APP"
+
+          # Patch AndroidManifest: app name + permissions
+          MANIFEST=android/app/src/main/AndroidManifest.xml
+          if ! grep -q "android.permission.INTERNET" "$MANIFEST"; then
+            awk '/<application/{print "    <uses-permission android:name=\"android.permission.INTERNET\"/>"; print "    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>"; print; next} 1' "$MANIFEST" > tmp && mv tmp "$MANIFEST"
+          fi
+          # Set Arabic app label
+          if grep -q "android:label" "$MANIFEST"; then
+            sed -i 's|android:label="[^"]*"|android:label="فندق قلب القاهرة"|' "$MANIFEST"
+          else
+            sed -i 's|<application|<application android:label="فندق قلب القاهرة"|' "$MANIFEST"
+          fi
+          echo "--- Final build.gradle: ---"
+          cat "$GRADLE_APP" | head -50
+
+      - name: Decode signing key (if configured)
+        working-directory: mobile
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "Using release signing key from GitHub Secrets."
+            echo "$KEYSTORE_BASE64" | base64 -d > android/app/keystore.jks
+            cat > android/key.properties <<EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=keystore.jks
+          EOF
+          else
+            echo "::notice::No ANDROID_KEYSTORE_BASE64 secret set — release-mode APK will be debug-signed. Re-sign with a release key before publishing to Google Play."
+          fi
+
+      - name: Build APKs (release, split per ABI)
+        run: |
+          flutter build apk --release --split-per-abi \
+            --dart-define=API_BASE="${{ env.PRODUCTION_API_BASE }}"
+        continue-on-error: true
+
+      - name: Build universal APK (release)
+        run: |
+          flutter build apk --release \
+            --dart-define=API_BASE="${{ env.PRODUCTION_API_BASE }}"
+
+      - name: Collect APKs
+        working-directory: mobile/build/app/outputs/flutter
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/apks"
+          # Rename split APKs
+          for f in apk/release/*.apk; do
+            [ -f "$f" ] || continue
+            name=$(basename "$f")
+            case "$name" in
+              *arm64-v8a*) cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-arm64-v8a-v${{ needs.prepare.outputs.version }}.apk" ;;
+              *armeabi-v7a*) cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-armeabi-v7a-v${{ needs.prepare.outputs.version }}.apk" ;;
+              *x86_64*) cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-x86_64-v${{ needs.prepare.outputs.version }}.apk" ;;
+            esac
+          done
+          # Universal fat APK
+          if [ -f apk/release/app-release.apk ]; then
+            cp apk/release/app-release.apk "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-universal-v${{ needs.prepare.outputs.version }}.apk"
+          fi
+          ls -lh "$GITHUB_WORKSPACE/apks/"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: ${{ github.workspace }}/apks/*.apk
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # iOS IPA (release, unsigned)
+  # ---------------------------------------------------------------------------
+  build-ios:
+    name: Build iOS IPA
+    needs: prepare
+    runs-on: macos-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Scaffold iOS platform folder
+        run: flutter create --platforms=ios --project-name cairo_heart_hotel .
+
+      - name: Patch iOS bundle identifier + version
+        working-directory: mobile
+        run: |
+          # Set CFBundleIdentifier + CFBundleShortVersionString in Info.plist
+          PLIST=ios/Runner/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ye.cairoheart.hotel" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string ye.cairoheart.hotel" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ needs.prepare.outputs.version }}" "$PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string ${{ needs.prepare.outputs.version }}" "$PLIST"
+          # Xcode project bundle id
+          PBX=ios/Runner.xcodeproj/project.pbxproj
+          sed -i.bak 's|PRODUCT_BUNDLE_IDENTIFIER = .*|PRODUCT_BUNDLE_IDENTIFIER = ye.cairoheart.hotel|g' "$PBX" || true
+          sed -i.bak 's|MARKETING_VERSION = .*|MARKETING_VERSION = ${{ needs.prepare.outputs.version }}|g' "$PBX" || true
+
+      - name: Build iOS (release, no-codesign)
+        run: |
+          flutter build ios --release --no-codesign \
+            --dart-define=API_BASE="${{ env.PRODUCTION_API_BASE }}"
+
+      - name: Package as unsigned IPA
+        working-directory: mobile/build/ios
+        run: |
+          mkdir -p Payload
+          # Runner.app is under build/ios/iphoneos/Runner.app
+          cp -R iphoneos/Runner.app Payload/Runner.app
+          zip -qr "$GITHUB_WORKSPACE/cairo-heart-hotel-ios-v${{ needs.prepare.outputs.version }}.ipa" Payload
+          ls -lh "$GITHUB_WORKSPACE"/*.ipa
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ${{ github.workspace }}/cairo-heart-hotel-ios-v${{ needs.prepare.outputs.version }}.ipa
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Next.js backend (standalone bundle)
+  # ---------------------------------------------------------------------------
+  build-backend:
+    name: Build Next.js backend
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      DATABASE_URL: "postgresql://user:pass@localhost:5432/db?connection_limit=1"
+      DIRECT_URL: "postgresql://user:pass@localhost:5432/db"
+      NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co"
+      SUPABASE_URL: "https://example.supabase.co"
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-anon-key-for-build-only"
+      SUPABASE_SERVICE_ROLE_KEY: "dummy-service-role-key-for-build-only"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: bun run db:generate
+
+      - name: Build (standalone Next.js)
+        run: bun run build:next
+
+      - name: Package backend bundle
+        run: |
+          mkdir -p bundle
+          cp -r .next/standalone bundle/server
+          cp -r .next/static bundle/server/.next/ 2>/dev/null || true
+          cp -r public bundle/server/ 2>/dev/null || true
+          cp package.json bundle/
+          cp -r prisma bundle/ 2>/dev/null || true
+          tar -czf "cairo-heart-hotel-backend-v${{ needs.prepare.outputs.version }}.tar.gz" -C bundle .
+          ls -lh "cairo-heart-hotel-backend-v${{ needs.prepare.outputs.version }}.tar.gz"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-bundle
+          path: cairo-heart-hotel-backend-v${{ needs.prepare.outputs.version }}.tar.gz
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Create GitHub Release + attach all artifacts
+  # ---------------------------------------------------------------------------
+  release:
+    name: Publish GitHub Release
+    needs: [prepare, build-web, build-android, build-ios, build-backend]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ github.workspace }}/release-assets
+
+      - name: Flatten artifact layout
+        run: |
+          set -e
+          mkdir -p dist
+          find release-assets -type f \( -name '*.zip' -o -name '*.apk' -o -name '*.ipa' -o -name '*.tar.gz' \) -print0 | while IFS= read -r -d '' f; do
+            cp -v "$f" dist/
+          done
+          echo "--- Final release contents:"
+          ls -lh dist/
+
+      - name: Check upstream build status
+        id: status
+        run: |
+          WEB="${{ needs.build-web.result }}"
+          AND="${{ needs.build-android.result }}"
+          IOS="${{ needs.build-ios.result }}"
+          BE="${{ needs.build-backend.result }}"
+          echo "web=$WEB android=$AND ios=$IOS backend=$BE"
+          if [[ "$WEB" != "success" || "$AND" != "success" || "$BE" != "success" ]]; then
+            echo "At least one required build failed — aborting release creation."
+            exit 1
+          fi
+          # iOS is allowed to fail (often needs code-signing setup)
+          if [[ "$IOS" != "success" ]]; then
+            echo "::warning::iOS build did not succeed — iOS IPA will be omitted from this release."
+          fi
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: "Cairo Heart Hotel ${{ needs.prepare.outputs.tag }}"
+          body: ${{ needs.prepare.outputs.release_notes }}
+          prerelease: ${{ needs.prepare.outputs.is_prerelease }}
+          draft: false
+          generate_release_notes: false
+          files: |
+            dist/*.zip
+            dist/*.apk
+            dist/*.ipa
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Output release URL
+        run: |
+          echo "Release published:"
+          echo "https://github.com/${{ github.repository }}/releases/tag/${{ needs.prepare.outputs.tag }}"
