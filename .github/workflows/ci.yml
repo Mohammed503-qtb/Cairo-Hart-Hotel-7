@@ -12,8 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  FLUTTER_VERSION: "3.27.4"
-  DART_SDK: "^3.6.0"
+  FLUTTER_CHANNEL: "stable"
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -33,11 +32,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Flutter SDK
+      - name: Setup Flutter SDK (latest stable — supports Dart 3.7+ wildcard + null-aware-elements)
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-          channel: stable
+          channel: ${{ env.FLUTTER_CHANNEL }}
           cache: true
 
       - name: Show Flutter version
@@ -49,9 +47,9 @@ jobs:
           path: |
             ~/.pub-cache
             mobile/.dart_tool
-          key: ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-${{ hashFiles('mobile/pubspec.lock') }}
+          key: ${{ runner.os }}-pub-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('mobile/pubspec.yaml', 'mobile/pubspec.lock') }}
           restore-keys: |
-            ${{ runner.os }}-pub-${{ env.FLUTTER_VERSION }}-
+            ${{ runner.os }}-pub-${{ env.FLUTTER_CHANNEL }}-
 
       - name: Read pubspec dependencies
         run: flutter pub get

@@ -258,7 +258,7 @@ class _FlagsTab extends StatelessWidget {
                 subtitle: Text(key, style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
                 value: enabled,
                 onChanged: (v) => onToggle(key, v),
-                activeThumbColor: AppTheme.primary,
+                activeTrackColor: AppTheme.primary,
               ),
             );
           },

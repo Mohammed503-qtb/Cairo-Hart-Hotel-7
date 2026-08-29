@@ -233,7 +233,7 @@ class _SectionTile extends StatelessWidget {
         ),
         trailing: Row(mainAxisSize: MainAxisSize.min, children: [
           IconButton(icon: const Icon(Icons.edit_outlined, size: 18, color: AppTheme.primary), onPressed: onEdit, tooltip: 'تعديل', visualDensity: VisualDensity.compact),
-          Switch(value: visible, onChanged: onToggle, activeThumbColor: AppTheme.primary),
+          Switch(value: visible, onChanged: onToggle, activeTrackColor: AppTheme.primary),
         ]),
       ),
     );
