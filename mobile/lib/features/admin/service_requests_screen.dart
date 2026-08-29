@@ -65,7 +65,7 @@ class _AdminServiceRequestsScreenState extends State<AdminServiceRequestsScreen>
       await api.patch('/api/admin/service-requests', body: {
         'id': req.id,
         'action': action,
-        'assignedToId': ?assignedToId,
+        if (assignedToId != null) 'assignedToId': assignedToId,
         if (reason != null && reason.isNotEmpty) 'reason': reason,
       });
       if (mounted) {

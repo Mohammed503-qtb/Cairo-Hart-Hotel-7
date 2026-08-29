@@ -212,7 +212,7 @@ class _ReservationDetailScreenState extends State<ReservationDetailScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               Expanded(child: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: AppTheme.textPrimary))),
-              ?trailing,
+              if (trailing != null) trailing!,
             ]),
             const SizedBox(height: 12),
             ...children,

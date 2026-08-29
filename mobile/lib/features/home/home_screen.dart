@@ -152,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 360,
             width: double.infinity,
             child: image != null
-              ? Image.network(image, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(color: AppTheme.primary.withValues(alpha: 0.3)))
+              ? Image.network(image, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: AppTheme.primary.withValues(alpha: 0.3)))
               : Container(color: AppTheme.primary),
           ),
           Positioned.fill(child: Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black.withValues(alpha: 0.2), Colors.black.withValues(alpha: 0.65)])))),
@@ -375,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _data!.roomTypes.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, i) => _FeaturedRoomCard(roomType: _data!.roomTypes[i]),
           ),
         ),
@@ -423,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _data!.offers.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, i) => _OfferCard(offer: _data!.offers[i]),
           ),
         ),
@@ -511,7 +511,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Image.network(
                     'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/45.0337,12.7738,12,0/600x200@2x?access_token=',
                     fit: BoxFit.cover, width: double.infinity, height: 140,
-                    errorBuilder: (_, _, _) => Container(
+                    errorBuilder: (_, __, ___) => Container(
                       color: AppTheme.background,
                       child: const Center(child: Icon(Icons.map, size: 40, color: AppTheme.primary)),
                     ),
@@ -561,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: _data!.reviews.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, i) => _ReviewCard(review: _data!.reviews[i]),
           ),
         ),
@@ -698,7 +698,7 @@ class _OfferCard extends StatelessWidget {
           onTap: () => Navigator.of(context).pushNamed('/rooms'),
           child: Stack(children: [
             if (offer.imageUrl != null) Positioned.fill(
-              child: Image.network(offer.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(color: AppTheme.primary)),
+              child: Image.network(offer.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Container(color: AppTheme.primary)),
             ),
             Positioned.fill(child: Container(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.black.withValues(alpha: 0.75)])))),
             Positioned(
