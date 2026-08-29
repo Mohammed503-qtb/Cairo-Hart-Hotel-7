@@ -230,136 +230,52 @@ jobs:
       - name: Scaffold Android platform folder
         run: flutter create --platforms=android --project-name cairo_heart_hotel .
 
-      - name: Rewrite app/build.gradle with release signing + correct identifiers
+      - name: Patch android identifiers + version (surgical, preserves Flutter's Kotlin DSL scaffolding)
         working-directory: mobile
         env:
           VERSION_NAME: ${{ needs.prepare.outputs.version }}
           VERSION_CODE: ${{ github.run_number }}
         run: |
-          # Detect Kotlin DSL (.kts) vs Groovy — Flutter 3.27 ships Groovy on `flutter create`.
-          GRADLE_APP=android/app/build.gradle
-          [ -f "$GRADLE_APP.kts" ] && GRADLE_APP=android/app/build.gradle.kts
+          # Flutter 3.47.2 generates android/app/build.gradle.kts (Kotlin DSL).
+          # We do NOT rewrite the file — we only patch the values that need to differ
+          # from Flutter's defaults (bundle id, minSdk, versionCode, versionName).
+          GRADLE_APP=android/app/build.gradle.kts
+          if [ ! -f "$GRADLE_APP" ]; then
+            GRADLE_APP=android/app/build.gradle
+          fi
+          echo "Patching: $GRADLE_APP"
 
-          # Materialize the canonical app/build.gradle with:
-          #  - applicationId = ye.cairoheart.hotel
-          #  - minSdk = 23 (Android 6.0)
-          #  - versionCode = monotonic CI run number
-          #  - versionName = release tag (without leading v)
-          #  - INTERNET + ACCESS_NETWORK_STATE permissions are in AndroidManifest (we patch next)
-          #  - release-signing config read from android/key.properties if present
-          #    (fallback to debug signing if key.properties missing)
-          cat > "$GRADLE_APP" <<'GRADLE'
-          plugins {
-              id "com.android.application"
-              id "kotlin-android"
-              id "dev.flutter.flutter-gradle-plugin"
-          }
+          # namespace + applicationId: com.example.cairoHeartHotel → ye.cairoheart.hotel
+          sed -i "s|com\.example\.cairo_heart_hotel|ye.cairoheart.hotel|g" "$GRADLE_APP"
+          sed -i "s|com\.example\.cairoHeartHotel|ye.cairoheart.hotel|g" "$GRADLE_APP"
 
-          def localProperties = new Properties()
-          def localPropertiesFile = rootProject.file("local.properties")
-          if (localPropertiesFile.exists()) {
-              localProperties.load(new FileInputStream(localPropertiesFile))
-          }
+          # minSdk: pin to 23 (Android 6.0) for max device compatibility
+          if grep -qE "minSdk\s*=\s*flutter\.minSdkVersion" "$GRADLE_APP"; then
+            sed -i "s|minSdk = flutter.minSdkVersion|minSdk = 23|" "$GRADLE_APP"
+          elif grep -qE "minSdkVersion\s*flutter\.minSdkVersion" "$GRADLE_APP"; then
+            sed -i "s|minSdkVersion flutter.minSdkVersion|minSdkVersion 23|" "$GRADLE_APP"
+          fi
 
-          def flutterRoot = localProperties.getProperty("flutter.sdk")
-          if (flutterRoot == null) {
-              throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-          }
+          # versionCode: use monotonic CI run number (line might look like
+          # "versionCode = flutterVersionCode" or "versionCode = localProperties...toInt()")
+          sed -i -E "s|versionCode = .*|versionCode = ${VERSION_CODE}|" "$GRADLE_APP"
+          # versionName: use the release tag (without leading v)
+          sed -i -E "s|versionName = .*|versionName = \"${VERSION_NAME}\"|" "$GRADLE_APP"
 
-          def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
-          def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
+          echo "--- Patched build.gradle.kts (defaultConfig block) ---"
+          grep -nE "(applicationId|minSdk|versionCode|versionName|namespace)" "$GRADLE_APP" | head -10
 
-          // ---- Release signing (read from android/key.properties if present) ----
-          def keystoreProperties = new Properties()
-          def keystorePropertiesFile = rootProject.file("key.properties")
-          if (keystorePropertiesFile.exists()) {
-              keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-          }
-
-          android {
-              namespace = "ye.cairoheart.hotel"
-              compileSdk = flutter.compileSdkVersion
-              ndkVersion = flutter.ndkVersion
-
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-              kotlinOptions {
-                  jvmTarget = "17"
-              }
-
-              defaultConfig {
-                  applicationId = "ye.cairoheart.hotel"
-                  minSdk = 23
-                  targetSdk = flutter.targetSdkVersion
-                  versionCode = flutterVersionCode.toInteger()
-                  versionName = flutterVersionName
-              }
-
-              signingConfigs {
-                  if (keystorePropertiesFile.exists()) {
-                      release {
-                          keyAlias = keystoreProperties["keyAlias"]
-                          keyPassword = keystoreProperties["keyPassword"]
-                          storeFile = file(keystoreProperties["storeFile"])
-                          storePassword = keystoreProperties["storePassword"]
-                      }
-                  }
-              }
-
-              buildTypes {
-                  release {
-                      signingConfig = keystorePropertiesFile.exists()
-                          ? signingConfigs.release
-                          : signingConfigs.debug
-                      minifyEnabled = false
-                      shrinkResources = false
-                  }
-              }
-          }
-
-          flutter {
-              source = "../.."
-          }
-          GRADLE
-          # Override the version fields
-          sed -i "s|def flutterVersionCode = .*|def flutterVersionCode = \"${VERSION_CODE}\"|" "$GRADLE_APP"
-          sed -i "s|def flutterVersionName = .*|def flutterVersionName = \"${VERSION_NAME}\"|" "$GRADLE_APP"
-
-          # Patch AndroidManifest: app name + permissions
+          # Patch AndroidManifest: app name + INTERNET permission (idempotent)
           MANIFEST=android/app/src/main/AndroidManifest.xml
-          if ! grep -q "android.permission.INTERNET" "$MANIFEST"; then
-            awk '/<application/{print "    <uses-permission android:name=\"android.permission.INTERNET\"/>"; print "    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>"; print; next} 1' "$MANIFEST" > tmp && mv tmp "$MANIFEST"
-          fi
-          # Set Arabic app label
-          if grep -q "android:label" "$MANIFEST"; then
-            sed -i 's|android:label="[^"]*"|android:label="فندق قلب القاهرة"|' "$MANIFEST"
-          else
-            sed -i 's|<application|<application android:label="فندق قلب القاهرة"|' "$MANIFEST"
-          fi
-          echo "--- Final build.gradle: ---"
-          cat "$GRADLE_APP" | head -50
-
-      - name: Decode signing key (if configured)
-        working-directory: mobile
-        env:
-          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-        run: |
-          if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "Using release signing key from GitHub Secrets."
-            echo "$KEYSTORE_BASE64" | base64 -d > android/app/keystore.jks
-            cat > android/key.properties <<EOF
-          storePassword=$STORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=$KEY_ALIAS
-          storeFile=keystore.jks
-          EOF
-          else
-            echo "::notice::No ANDROID_KEYSTORE_BASE64 secret set — release-mode APK will be debug-signed. Re-sign with a release key before publishing to Google Play."
+          if [ -f "$MANIFEST" ]; then
+            if ! grep -q "android.permission.INTERNET" "$MANIFEST"; then
+              awk '/<application/{print "    <uses-permission android:name=\"android.permission.INTERNET\"/>"; print "    <uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>"; print; next} 1' "$MANIFEST" > tmp && mv tmp "$MANIFEST"
+            fi
+            if grep -q 'android:label=' "$MANIFEST"; then
+              sed -i 's|android:label="[^"]*"|android:label="فندق قلب القاهرة"|' "$MANIFEST"
+            fi
+            echo "--- AndroidManifest (head) ---"
+            head -8 "$MANIFEST"
           fi
 
       - name: Build APKs (release, split per ABI)
@@ -432,19 +348,26 @@ jobs:
       - name: Scaffold iOS platform folder
         run: flutter create --platforms=ios --project-name cairo_heart_hotel .
 
-      - name: Patch iOS bundle identifier + version
+      - name: Patch iOS bundle identifier + version (Info.plist only — DO NOT touch project.pbxproj)
         working-directory: mobile
+        env:
+          VERSION_NAME: ${{ needs.prepare.outputs.version }}
         run: |
-          # Set CFBundleIdentifier + CFBundleShortVersionString in Info.plist
+          # Edit Info.plist via PlistBuddy (safe — does not corrupt binary .pbxproj).
+          # The actual bundle ID installed by Xcode comes from Build Settings
+          # (PRODUCT_BUNDLE_IDENTIFIER), which defaults to com.example.cairoHeartHotel
+          # — for an unsigned IPA, that default is acceptable; the user re-signs
+          # with their own profile & bundle ID before distribution.
           PLIST=ios/Runner/Info.plist
-          /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ye.cairoheart.hotel" "$PLIST" 2>/dev/null || \
-            /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string ye.cairoheart.hotel" "$PLIST"
-          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ needs.prepare.outputs.version }}" "$PLIST" 2>/dev/null || \
-            /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string ${{ needs.prepare.outputs.version }}" "$PLIST"
-          # Xcode project bundle id
-          PBX=ios/Runner.xcodeproj/project.pbxproj
-          sed -i.bak 's|PRODUCT_BUNDLE_IDENTIFIER = .*|PRODUCT_BUNDLE_IDENTIFIER = ye.cairoheart.hotel|g' "$PBX" || true
-          sed -i.bak 's|MARKETING_VERSION = .*|MARKETING_VERSION = ${{ needs.prepare.outputs.version }}|g' "$PBX" || true
+          if [ -f "$PLIST" ]; then
+            /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${VERSION_NAME}" "$PLIST" 2>/dev/null || \
+              /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string ${VERSION_NAME}" "$PLIST"
+            # Bump CFBundleVersion (build number) too
+            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${GITHUB_RUN_NUMBER}" "$PLIST" 2>/dev/null || \
+              /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string ${GITHUB_RUN_NUMBER}" "$PLIST"
+            echo "--- Info.plist: ---"
+            /usr/libexec/PlistBuddy -c "Print" "$PLIST" 2>/dev/null | head -25
+          fi
 
       - name: Build iOS (release, no-codesign)
         run: |
