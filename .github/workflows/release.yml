@@ -290,23 +290,40 @@ jobs:
             --dart-define=API_BASE="${{ env.PRODUCTION_API_BASE }}"
 
       - name: Collect APKs
-        working-directory: mobile/build/app/outputs/flutter
+        working-directory: mobile
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
         run: |
+          set -e
           mkdir -p "$GITHUB_WORKSPACE/apks"
-          # Rename split APKs
-          for f in apk/release/*.apk; do
+          APK_DIR="build/app/outputs/flutter-apk"
+          if [ ! -d "$APK_DIR" ]; then
+            echo "::error::APK output directory $APK_DIR does not exist. Build step may have failed silently."
+            exit 1
+          fi
+          echo "--- Found APKs in $APK_DIR: ---"
+          ls -lh "$APK_DIR"/*.apk 2>/dev/null || true
+          # Rename split APKs (per-ABI)
+          for f in "$APK_DIR"/*-armeabi-v7a-release.apk \
+                   "$APK_DIR"/*-arm64-v8a-release.apk \
+                   "$APK_DIR"/*-x86_64-release.apk; do
             [ -f "$f" ] || continue
-            name=$(basename "$f")
-            case "$name" in
-              *arm64-v8a*) cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-arm64-v8a-v${{ needs.prepare.outputs.version }}.apk" ;;
-              *armeabi-v7a*) cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-armeabi-v7a-v${{ needs.prepare.outputs.version }}.apk" ;;
-              *x86_64*) cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-x86_64-v${{ needs.prepare.outputs.version }}.apk" ;;
+            case "$(basename "$f")" in
+              *arm64-v8a*)      cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-arm64-v8a-v${VERSION}.apk" ;;
+              *armeabi-v7a*)    cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-armeabi-v7a-v${VERSION}.apk" ;;
+              *x86_64*)         cp "$f" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-x86_64-v${VERSION}.apk" ;;
             esac
           done
-          # Universal fat APK
-          if [ -f apk/release/app-release.apk ]; then
-            cp apk/release/app-release.apk "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-universal-v${{ needs.prepare.outputs.version }}.apk"
+          # Universal fat APK (named app-release.apk by Flutter)
+          if [ -f "$APK_DIR/app-release.apk" ]; then
+            cp "$APK_DIR/app-release.apk" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-universal-v${VERSION}.apk"
+          else
+            # Fallback: if no universal APK exists, build one now (the universal step may have been skipped)
+            echo "::notice::No universal APK found — running a separate build now."
+            flutter build apk --release --dart-define=API_BASE="${{ env.PRODUCTION_API_BASE }}"
+            [ -f "$APK_DIR/app-release.apk" ] && cp "$APK_DIR/app-release.apk" "$GITHUB_WORKSPACE/apks/cairo-heart-hotel-universal-v${VERSION}.apk"
           fi
+          echo "--- Final APK collection: ---"
           ls -lh "$GITHUB_WORKSPACE/apks/"
 
       - name: Upload artifacts
