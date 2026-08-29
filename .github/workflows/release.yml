@@ -137,7 +137,7 @@ jobs:
           cache: true
 
       - name: Restore pub cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.pub-cache
@@ -206,7 +206,7 @@ jobs:
           cache: true
 
       - name: Restore pub cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.pub-cache
@@ -216,7 +216,7 @@ jobs:
             ${{ runner.os }}-pub-${{ env.FLUTTER_CHANNEL }}-
 
       - name: Restore Gradle cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -493,7 +493,7 @@ jobs:
           bun-version: latest
 
       - name: Restore node_modules cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: node_modules
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
