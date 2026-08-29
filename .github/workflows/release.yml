@@ -164,7 +164,7 @@ jobs:
           cp "cairo-heart-hotel-web-v${{ needs.prepare.outputs.version }}.zip" "$GITHUB_WORKSPACE/"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-bundle
           path: ${{ github.workspace }}/cairo-heart-hotel-web-v${{ needs.prepare.outputs.version }}.zip
@@ -392,7 +392,7 @@ jobs:
           ls -lh "$GITHUB_WORKSPACE/apks/"
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: android-apks
           path: ${{ github.workspace }}/apks/*.apk
@@ -460,7 +460,7 @@ jobs:
           ls -lh "$GITHUB_WORKSPACE"/*.ipa
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ios-ipa
           path: ${{ github.workspace }}/cairo-heart-hotel-ios-v${{ needs.prepare.outputs.version }}.ipa
@@ -518,7 +518,7 @@ jobs:
           ls -lh "cairo-heart-hotel-backend-v${{ needs.prepare.outputs.version }}.tar.gz"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: backend-bundle
           path: cairo-heart-hotel-backend-v${{ needs.prepare.outputs.version }}.tar.gz
