@@ -1,0 +1,53 @@
+name: Deploy Web to GitHub Pages
+
+on:
+  workflow_run:
+    workflows: ["Release"]
+    types:
+      - completed
+    branches:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 20
+    steps:
+      - name: Download the web artifact produced by the Release workflow
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: release.yml
+          workflow_conclusion: success
+          name: web-release
+          path: ${{ runner.temp }}/web-release
+          if_no_artifact_found: fail
+
+      - name: Unzip web build
+        run: |
+          mkdir -p web
+          unzip -o "${{ runner.temp }}/web-release/web-release.zip" -d web
+          touch web/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

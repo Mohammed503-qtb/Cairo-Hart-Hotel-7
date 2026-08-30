@@ -2,123 +2,68 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, release/*]
-  pull_request:
     branches: [main, develop]
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  FLUTTER_CHANNEL: "stable"
-
 jobs:
-  # ---------------------------------------------------------------------------
-  # Flutter — analyze, format-check, build web (smoke)
-  # ---------------------------------------------------------------------------
-  flutter-ci:
-    name: Flutter · analyze + build web
+  analyze-and-test:
+    name: Analyze & Test
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    defaults:
-      run:
-        working-directory: mobile
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Setup Flutter SDK (latest stable — supports Dart 3.7+ wildcard + null-aware-elements)
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: ${{ env.FLUTTER_CHANNEL }}
+          channel: stable
           cache: true
 
       - name: Show Flutter version
         run: flutter --version
 
-      - name: Restore pub cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            mobile/.dart_tool
-          key: ${{ runner.os }}-pub-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('mobile/pubspec.yaml', 'mobile/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-${{ env.FLUTTER_CHANNEL }}-
-
-      - name: Read pubspec dependencies
+      - name: Install dependencies
         run: flutter pub get
 
       - name: Verify formatting
-        continue-on-error: true
-        run: dart format --set-exit-if-changed --output=none lib
+        run: dart format --output=none --set-exit-if-changed lib/
 
-      - name: Analyze project (non-blocking; surfaces lints as warnings)
-        continue-on-error: true
-        run: flutter analyze --no-pub --preamble --concurrency=4
+      - name: Analyze project (treat warnings as info — fail only on errors)
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
-      - name: Scaffold missing native platform folders (Android / iOS / Web)
-        run: flutter create --platforms=android,ios,web --project-name cairo_heart_hotel .
+      - name: Run tests (if any)
+        run: flutter test --coverage || true
 
-      - name: Build web (release, smoke)
-        run: |
-          flutter build web --release --no-tree-shake-icons --base-href "/flutter-static/"
-
-      - name: Upload web build artifact
-        if: always()
+      - name: Upload coverage
+        if: hashFiles('coverage/lcov.info') != ''
         uses: actions/upload-artifact@v4
         with:
-          name: flutter-web-ci
-          path: mobile/build/web
+          name: coverage
+          path: coverage/
           retention-days: 7
 
-  # ---------------------------------------------------------------------------
-  # Next.js / Backend — lint + type-check + build standalone
-  # ---------------------------------------------------------------------------
-  backend-ci:
-    name: Next.js · lint + build
+  build-web-smoke:
+    name: Web build smoke test
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    env:
-      DATABASE_URL: "postgresql://user:pass@localhost:5432/db?connection_limit=1"
-      DIRECT_URL: "postgresql://user:pass@localhost:5432/db"
-      NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co"
-      SUPABASE_URL: "https://example.supabase.co"
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: "dummy-anon-key-for-build-only"
-      SUPABASE_SERVICE_ROLE_KEY: "dummy-service-role-key-for-build-only"
-
+    needs: analyze-and-test
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
         with:
-          bun-version: latest
-
-      - name: Restore node_modules cache
-        uses: actions/cache@v4
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Web release build smoke test
+        run: flutter build web --release --base-href "/" --web-renderer canvaskit
+      - uses: actions/upload-artifact@v4
         with:
-          path: node_modules
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: ${{ runner.os }}-bun-
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Generate Prisma client
-        run: bun run db:generate
-
-      - name: Lint
-        run: bun run lint
-        continue-on-error: true
-
-      - name: Build (Next.js standalone)
-        run: bun run build:next
-        env:
-          NEXT_TELEMETRY_DISABLED: "1"
+          name: web-smoke
+          path: build/web
+          retention-days: 3

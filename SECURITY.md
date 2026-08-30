@@ -1,42 +1,44 @@
 # Security Policy
 
-## Reporting a vulnerability
+## Supported Versions
 
-If you discover a security vulnerability in **Cairo Heart Hotel**, please report
-it responsibly.
-
-- **Email**: security@cairoheart.ye
-- **PGP**: available on request
-- **Do not** open a public GitHub issue for security reports.
-
-We will acknowledge receipt within 48 hours and provide an estimated timeline
-for a fix within 5 business days.
-
-## Scope
-
-| Component | In scope |
+| Version | Supported |
 |---|---|
-| Next.js API routes (`src/app/api/**`) | Yes |
-| Prisma schema (`prisma/schema.prisma`) | Yes |
-| Flutter app (`mobile/lib/**`) | Yes |
-| Supabase RLS / Postgres policies | Yes |
-| GitHub Actions workflows (`.github/workflows/**`) | Yes |
-| Anything behind a private Supabase project (not the public schema mirror) | Out of scope |
+| 1.0.x | ✅ |
+| < 1.0 | ❌ (archived in `archived-original` branch) |
 
-## Disclosure policy
+## Reporting a Vulnerability
 
-- We follow **coordinated disclosure**.
-- After a fix is shipped, we will publish a security advisory on GitHub with
-  credits to the reporter (unless they prefer to remain anonymous).
+Please **DO NOT** open a public issue for security vulnerabilities. Instead,
+email the maintainer privately at the address listed on the GitHub profile.
 
-## Hardening checklist for production deployments
+You should receive a response within 72 hours. Please include:
 
-- [ ] Rotate the Supabase `service_role` key quarterly.
-- [ ] Enable RLS on every table in the public schema.
-- [ ] Restrict Supabase API URL to known origins (CORS allow-list).
-- [ ] Set up Supabase log drain to a SIEM.
-- [ ] Enable GitHub branch protection on `main` (required status checks + signed commits).
-- [ ] Use `dependabot` for dependency updates (already configured).
-- [ ] Pin `flutter-action` and `setup-bun` to a SHA, not a floating tag, in workflows.
-- [ ] Set Android `PRODUCTION_API_BASE` to an HTTPS URL with a valid certificate.
-- [ ] Use HSTS (`max-age=63072000; includeSubDomains; preload`) on the API host.
+- Description of the issue and its potential impact
+- Steps to reproduce
+- Suggested fix (if any)
+
+## Production Hardening Checklist
+
+Before deploying to a commercial environment:
+
+- [ ] Replace in-memory store with a real database (Postgres/Supabase recommended).
+- [ ] Add authentication + per-stay authorization middleware.
+- [ ] Move secrets (DB credentials, payment gateway keys, WhatsApp API) to a
+      secrets manager — never commit them.
+- [ ] Configure Android signing keystore via CI secrets (see README).
+- [ ] Configure iOS signing certificate + provisioning profile via CI secrets.
+- [ ] Enable HTTPS everywhere (Caddy/Cloudflare in front of the web build).
+- [ ] Set up monitoring + alerting (Sentry / Crashlytics).
+- [ ] Run `flutter test` in CI and add unit/widget tests for the booking,
+      check-in, billing, and checkout flows.
+- [ ] Review the audit log retention policy.
+- [ ] Run a security review of the payment flow.
+
+## Guest Data Isolation
+
+The platform enforces guest data isolation by design:
+- A guest session is bound to a specific stay via an activation code.
+- A guest can only read their own stay, requests, charges, and notifications.
+- Reception and Admin roles are separated; reception does not inherit admin rights.
+- All state transitions are recorded in the audit log.
