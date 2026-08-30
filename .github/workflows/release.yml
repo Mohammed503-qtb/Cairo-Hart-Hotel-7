@@ -109,6 +109,7 @@ jobs:
           path: |
             build/app/outputs/flutter-apk/*.apk
             build/app/outputs/flutter-bundle/*.aab
+            build/app/outputs/bundle/release/*.aab
             ${{ runner.temp }}/apk.sha256
             ${{ runner.temp }}/aab.sha256
           retention-days: 14
