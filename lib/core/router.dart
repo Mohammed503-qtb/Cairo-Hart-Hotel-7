@@ -115,10 +115,7 @@ GoRouter buildRouter(AppState app) {
         path: '/guest/activate',
         builder: (context, state) => const ActivationScreen(),
       ),
-      GoRoute(
-        path: '/guest',
-        builder: (context, state) => const GuestShell(),
-      ),
+      GoRoute(path: '/guest', builder: (context, state) => const GuestShell()),
       GoRoute(
         path: '/guest/services',
         builder: (context, state) => const ServicesScreen(),
@@ -181,10 +178,7 @@ GoRouter buildRouter(AppState app) {
         path: '/admin/login',
         builder: (context, state) => const AdminLoginScreen(),
       ),
-      GoRoute(
-        path: '/admin',
-        builder: (context, state) => const AdminShell(),
-      ),
+      GoRoute(path: '/admin', builder: (context, state) => const AdminShell()),
       GoRoute(
         path: '/admin/rooms',
         builder: (context, state) => const RoomsAdminScreen(),

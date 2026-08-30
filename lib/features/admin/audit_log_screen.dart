@@ -17,7 +17,10 @@ class AuditLogScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text(l.auditLog),
       ),
       body: store.audit.isEmpty
@@ -29,9 +32,18 @@ class AuditLogScreen extends StatelessWidget {
               itemBuilder: (c, i) {
                 final e = store.audit[i];
                 return ListTile(
-                  leading: Icon(Icons.history, color: theme.colorScheme.primary),
-                  title: Text('${e.action} → ${e.target}', style: theme.textTheme.titleSmall),
-                  subtitle: Text('${e.detail ?? ""} • ${e.actor} • ${Fmt.dateTime(e.at)}', style: theme.textTheme.bodySmall),
+                  leading: Icon(
+                    Icons.history,
+                    color: theme.colorScheme.primary,
+                  ),
+                  title: Text(
+                    '${e.action} → ${e.target}',
+                    style: theme.textTheme.titleSmall,
+                  ),
+                  subtitle: Text(
+                    '${e.detail ?? ""} • ${e.actor} • ${Fmt.dateTime(e.at)}',
+                    style: theme.textTheme.bodySmall,
+                  ),
                 );
               },
             ),

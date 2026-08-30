@@ -106,13 +106,13 @@ class SectionCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        title!,
-                        style: theme.textTheme.titleMedium,
-                      ),
+                      child: Text(title!, style: theme.textTheme.titleMedium),
                     ),
                     if (actionLabel != null)
-                      TextButton(onPressed: onAction, child: Text(actionLabel!)),
+                      TextButton(
+                        onPressed: onAction,
+                        child: Text(actionLabel!),
+                      ),
                   ],
                 ),
               ),
@@ -188,7 +188,11 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 56, color: theme.colorScheme.onSurface.withOpacity(0.25)),
+            Icon(
+              icon,
+              size: 56,
+              color: theme.colorScheme.onSurface.withOpacity(0.25),
+            ),
             const SizedBox(height: 14),
             Text(
               message,
@@ -220,9 +224,12 @@ class MoneyText extends StatelessWidget {
     final theme = Theme.of(context);
     return Text(
       Fmt.money(amount),
-      style: style ??
+      style:
+          style ??
           (bold
-              ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
+              ? theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                )
               : theme.textTheme.bodyMedium),
     );
   }
@@ -268,7 +275,10 @@ class RoomImage extends StatelessWidget {
               left: 12,
               bottom: 10,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black.withOpacity(0.35),
                   borderRadius: BorderRadius.circular(8),

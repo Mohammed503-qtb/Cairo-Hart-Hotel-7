@@ -39,7 +39,8 @@ class AppState extends ChangeNotifier {
   }
 
   void _updateDark(Brightness b) {
-    final dark = _themeMode == AppThemeMode.dark ||
+    final dark =
+        _themeMode == AppThemeMode.dark ||
         (_themeMode == AppThemeMode.system && b == Brightness.dark);
     _isDark = dark;
   }

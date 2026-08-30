@@ -136,101 +136,111 @@ class HotelStore extends ChangeNotifier {
     stay1.guestAccessId = access1.id;
 
     // Seed a couple of charges for Mohamed's stay
-    charges.add(Charge(
-      id: Fmt.chargeId(1),
-      stayId: stay1.id,
-      description: 'Room — 3 nights',
-      category: 'Room',
-      quantity: 3,
-      unitPrice: 780,
-      gross: 2340,
-      discount: 0,
-      net: 2340,
-      tax: 117,
-      at: DateTime.now(),
-      source: 'room',
-      createdBy: 'system',
-    ));
-    charges.add(Charge(
-      id: Fmt.chargeId(2),
-      stayId: stay1.id,
-      description: 'Minibar',
-      category: 'F&B',
-      quantity: 2,
-      unitPrice: 35,
-      gross: 70,
-      discount: 0,
-      net: 70,
-      tax: 3.5,
-      at: DateTime.now(),
-      source: 'manual',
-      createdBy: 'reception',
-    ));
-    payments.add(Payment(
-      id: Fmt.paymentId(1),
-      stayId: stay1.id,
-      method: PaymentMethod.creditCard,
-      amount: 1000,
-      at: DateTime.now(),
-      reference: 'VISA-****1230',
-      recordedBy: 'reception',
-    ));
+    charges.add(
+      Charge(
+        id: Fmt.chargeId(1),
+        stayId: stay1.id,
+        description: 'Room — 3 nights',
+        category: 'Room',
+        quantity: 3,
+        unitPrice: 780,
+        gross: 2340,
+        discount: 0,
+        net: 2340,
+        tax: 117,
+        at: DateTime.now(),
+        source: 'room',
+        createdBy: 'system',
+      ),
+    );
+    charges.add(
+      Charge(
+        id: Fmt.chargeId(2),
+        stayId: stay1.id,
+        description: 'Minibar',
+        category: 'F&B',
+        quantity: 2,
+        unitPrice: 35,
+        gross: 70,
+        discount: 0,
+        net: 70,
+        tax: 3.5,
+        at: DateTime.now(),
+        source: 'manual',
+        createdBy: 'reception',
+      ),
+    );
+    payments.add(
+      Payment(
+        id: Fmt.paymentId(1),
+        stayId: stay1.id,
+        method: PaymentMethod.creditCard,
+        amount: 1000,
+        at: DateTime.now(),
+        reference: 'VISA-****1230',
+        recordedBy: 'reception',
+      ),
+    );
     _chargeSeq = 3;
     _paySeq = 2;
 
     // One in-progress request for Mohamed
-    requests.add(GuestRequest(
-      id: Fmt.requestId(1),
-      stayId: stay1.id,
-      guestId: mohamed.id,
-      roomId: room204.id,
-      category: ServiceCategory.housekeeping,
-      title: 'Extra towels',
-      description: 'Please bring two extra bath towels to room 204.',
-      status: RequestStatus.inProgress,
-      createdAt: DateTime.now().subtract(const Duration(minutes: 25)),
-      assignedTo: 'Housekeeping — Layla',
-      messages: [
-        RequestMessage(
-          id: 'm1',
-          authorId: 'g1',
-          fromStaff: false,
-          text: 'Please bring two extra bath towels.',
-          at: DateTime.now().subtract(const Duration(minutes: 25)),
-        ),
-        RequestMessage(
-          id: 'm2',
-          authorId: 'u2',
-          fromStaff: true,
-          text: 'On the way, 5 minutes.',
-          at: DateTime.now().subtract(const Duration(minutes: 18)),
-        ),
-      ],
-    ));
+    requests.add(
+      GuestRequest(
+        id: Fmt.requestId(1),
+        stayId: stay1.id,
+        guestId: mohamed.id,
+        roomId: room204.id,
+        category: ServiceCategory.housekeeping,
+        title: 'Extra towels',
+        description: 'Please bring two extra bath towels to room 204.',
+        status: RequestStatus.inProgress,
+        createdAt: DateTime.now().subtract(const Duration(minutes: 25)),
+        assignedTo: 'Housekeeping — Layla',
+        messages: [
+          RequestMessage(
+            id: 'm1',
+            authorId: 'g1',
+            fromStaff: false,
+            text: 'Please bring two extra bath towels.',
+            at: DateTime.now().subtract(const Duration(minutes: 25)),
+          ),
+          RequestMessage(
+            id: 'm2',
+            authorId: 'u2',
+            fromStaff: true,
+            text: 'On the way, 5 minutes.',
+            at: DateTime.now().subtract(const Duration(minutes: 18)),
+          ),
+        ],
+      ),
+    );
     _reqSeq = 2;
 
     // Conversation for Mohamed
-    conversations.add(Conversation(
-      id: 'CV1',
-      stayId: stay1.id,
-      guestId: mohamed.id,
-      messages: [
-        RequestMessage(
-          id: 'cm1',
-          authorId: 'g1',
-          fromStaff: false,
-          text: 'Hello, is the gym open 24 hours?',
-          at: DateTime.now().subtract(const Duration(hours: 2)),
-        ),
-        RequestMessage(
-          id: 'cm2',
-          authorId: 'u2',
-          fromStaff: true,
-          text: 'Yes, the gym is open 24 hours on the 3rd floor.',
-          at: DateTime.now().subtract(const Duration(hours: 2)),
-        ),
-      ],
-    ));
+    conversations.add(
+      Conversation(
+        id: 'CV1',
+        stayId: stay1.id,
+        guestId: mohamed.id,
+        messages: [
+          RequestMessage(
+            id: 'cm1',
+            authorId: 'g1',
+            fromStaff: false,
+            text: 'Hello, is the gym open 24 hours?',
+            at: DateTime.now().subtract(const Duration(hours: 2)),
+          ),
+          RequestMessage(
+            id: 'cm2',
+            authorId: 'u2',
+            fromStaff: true,
+            text: 'Yes, the gym is open 24 hours on the 3rd floor.',
+            at: DateTime.now().subtract(const Duration(hours: 2)),
+          ),
+        ],
+      ),
+    );
 
     // Today's arrival: Sara (confirmed, not yet checked in)
     final res2 = Reservation(
@@ -288,28 +298,32 @@ class HotelStore extends ChangeNotifier {
       checkIn: today.subtract(const Duration(days: 2)),
       checkOut: today,
       status: StayStatus.inHouse,
-      createdAt: today.subtract(const Duration(days: 2)).add(const Duration(hours: 3)),
+      createdAt: today
+          .subtract(const Duration(days: 2))
+          .add(const Duration(hours: 3)),
     );
     stays.add(stay3);
     res3.stayId = stay3.id;
     res3.assignedRoomId = room301.id;
     room301.status = RoomStatus.occupied;
     room301.currentStayId = stay3.id;
-    charges.add(Charge(
-      id: Fmt.chargeId(3),
-      stayId: stay3.id,
-      description: 'Room — 2 nights',
-      category: 'Room',
-      quantity: 2,
-      unitPrice: 520,
-      gross: 1040,
-      discount: 0,
-      net: 1040,
-      tax: 52,
-      at: stay3.createdAt,
-      source: 'room',
-      createdBy: 'system',
-    ));
+    charges.add(
+      Charge(
+        id: Fmt.chargeId(3),
+        stayId: stay3.id,
+        description: 'Room — 2 nights',
+        category: 'Room',
+        quantity: 2,
+        unitPrice: 520,
+        gross: 1040,
+        discount: 0,
+        net: 1040,
+        tax: 52,
+        at: stay3.createdAt,
+        source: 'room',
+        createdBy: 'system',
+      ),
+    );
 
     // A confirmed future reservation
     final res4 = Reservation(
@@ -335,21 +349,26 @@ class HotelStore extends ChangeNotifier {
     );
     reservations.add(res4);
 
-    notifications.add(AppNotification(
-      id: 'n1',
-      title: 'Welcome to Lumière Grand',
-      body: 'Your stay in room 204 is active until ${Fmt.dateShort(stay1.checkOut)}.',
-      at: DateTime.now().subtract(const Duration(hours: 5)),
-      scope: 'guest',
-      guestId: mohamed.id,
-    ));
-    notifications.add(AppNotification(
-      id: 'n2',
-      title: 'New arrival: Sara Al-Mansouri',
-      body: 'Reservation ${res2.id}, Suite, arriving today.',
-      at: DateTime.now().subtract(const Duration(hours: 1)),
-      scope: 'reception',
-    ));
+    notifications.add(
+      AppNotification(
+        id: 'n1',
+        title: 'Welcome to Lumière Grand',
+        body:
+            'Your stay in room 204 is active until ${Fmt.dateShort(stay1.checkOut)}.',
+        at: DateTime.now().subtract(const Duration(hours: 5)),
+        scope: 'guest',
+        guestId: mohamed.id,
+      ),
+    );
+    notifications.add(
+      AppNotification(
+        id: 'n2',
+        title: 'New arrival: Sara Al-Mansouri',
+        body: 'Reservation ${res2.id}, Suite, arriving today.',
+        at: DateTime.now().subtract(const Duration(hours: 1)),
+        scope: 'reception',
+      ),
+    );
   }
 
   DateTime _today() {
@@ -374,11 +393,13 @@ class HotelStore extends ChangeNotifier {
       firstWhereOrNull(conversations, (c) => c.stayId == stayId);
 
   List<Stay> get activeStays => stays
-      .where((s) =>
-          s.status == StayStatus.inHouse ||
-          s.status == StayStatus.checkedIn ||
-          s.status == StayStatus.extensionPending ||
-          s.status == StayStatus.checkoutPending)
+      .where(
+        (s) =>
+            s.status == StayStatus.inHouse ||
+            s.status == StayStatus.checkedIn ||
+            s.status == StayStatus.extensionPending ||
+            s.status == StayStatus.checkoutPending,
+      )
       .toList();
 
   List<Stay> staysForGuest(String guestId) =>
@@ -438,7 +459,8 @@ class HotelStore extends ChangeNotifier {
     for (final r in reservations) {
       if (r.assignedRoomId != room.id) continue;
       if (r.status == ReservationStatus.cancelled ||
-          r.status == ReservationStatus.noShow) continue;
+          r.status == ReservationStatus.noShow)
+        continue;
       if (_overlaps(ci, co, r.checkIn, r.checkOut)) return true;
     }
     return false;
@@ -500,8 +522,12 @@ class HotelStore extends ChangeNotifier {
       createdAt: DateTime.now(),
     );
     reservations.insert(0, res);
-    _audit('system', 'create-reservation', res.id,
-        'Guest $guestId, ${type.id}, ${Fmt.dateNum(checkIn)} → ${Fmt.dateNum(checkOut)}');
+    _audit(
+      'system',
+      'create-reservation',
+      res.id,
+      'Guest $guestId, ${type.id}, ${Fmt.dateNum(checkIn)} → ${Fmt.dateNum(checkOut)}',
+    );
     _notify(
       title: 'Reservation confirmed',
       body: '${res.id} • ${type.name} • ${Fmt.dateShort(checkIn)}',
@@ -615,33 +641,37 @@ class HotelStore extends ChangeNotifier {
     stay.guestAccessId = access.id;
 
     // Opening room charge
-    charges.add(Charge(
-      id: Fmt.chargeId(++_chargeSeq),
-      stayId: stay.id,
-      description:
-          'Room ${room.number} — ${r.price.nights} ${r.price.nights == 1 ? 'night' : 'nights'}',
-      category: 'Room',
-      quantity: r.price.nights,
-      unitPrice: r.price.nightlyRate,
-      gross: r.price.subtotal,
-      discount: 0,
-      net: r.price.subtotal,
-      tax: r.price.tax,
-      at: DateTime.now(),
-      source: 'room',
-      createdBy: actor,
-    ));
+    charges.add(
+      Charge(
+        id: Fmt.chargeId(++_chargeSeq),
+        stayId: stay.id,
+        description:
+            'Room ${room.number} — ${r.price.nights} ${r.price.nights == 1 ? 'night' : 'nights'}',
+        category: 'Room',
+        quantity: r.price.nights,
+        unitPrice: r.price.nightlyRate,
+        gross: r.price.subtotal,
+        discount: 0,
+        net: r.price.subtotal,
+        tax: r.price.tax,
+        at: DateTime.now(),
+        source: 'room',
+        createdBy: actor,
+      ),
+    );
 
     if (deposit != null && deposit > 0) {
-      payments.add(Payment(
-        id: Fmt.paymentId(++_paySeq),
-        stayId: stay.id,
-        method: depositMethod ?? PaymentMethod.creditCard,
-        amount: deposit,
-        at: DateTime.now(),
-        reference: 'Deposit at check-in',
-        recordedBy: actor,
-      ));
+      payments.add(
+        Payment(
+          id: Fmt.paymentId(++_paySeq),
+          stayId: stay.id,
+          method: depositMethod ?? PaymentMethod.creditCard,
+          amount: deposit,
+          at: DateTime.now(),
+          reference: 'Deposit at check-in',
+          recordedBy: actor,
+        ),
+      );
     }
 
     _audit(actor, 'check-in', stay.id, 'Room ${room.number}, code $code');
@@ -660,8 +690,7 @@ class HotelStore extends ChangeNotifier {
     return stay;
   }
 
-  Room? _pickAvailableRoomForType(
-      String roomTypeId, DateTime ci, DateTime co) {
+  Room? _pickAvailableRoomForType(String roomTypeId, DateTime ci, DateTime co) {
     for (final r in rooms) {
       if (r.roomTypeId != roomTypeId) continue;
       if (!r.active) continue;
@@ -679,7 +708,10 @@ class HotelStore extends ChangeNotifier {
 
   /// Validate guest access code (PLAN §13.2). Returns matching stay if valid.
   Stay? validateAccessCode(String code) {
-    final access = firstWhereOrNull(accesses, (a) => a.code == code && a.active);
+    final access = firstWhereOrNull(
+      accesses,
+      (a) => a.code == code && a.active,
+    );
     if (access == null) return null;
     if (access.expiresAt != null && DateTime.now().isAfter(access.expiresAt!)) {
       return null;
@@ -713,8 +745,12 @@ class HotelStore extends ChangeNotifier {
       createdAt: DateTime.now(),
     );
     requests.insert(0, req);
-    _audit('guest', 'create-request', req.id,
-        '${category.label}: $title (room ${roomById(stay.roomId)?.number})');
+    _audit(
+      'guest',
+      'create-request',
+      req.id,
+      '${category.label}: $title (room ${roomById(stay.roomId)?.number})',
+    );
     _notify(
       title: 'New request • Room ${roomById(stay.roomId)?.number}',
       body: '${category.label}: $title',
@@ -724,8 +760,11 @@ class HotelStore extends ChangeNotifier {
     return req;
   }
 
-  void updateRequestStatus(String reqId, RequestStatus status,
-      {String? assignedTo}) {
+  void updateRequestStatus(
+    String reqId,
+    RequestStatus status, {
+    String? assignedTo,
+  }) {
     final r = requestById(reqId);
     if (r == null) return;
     r.status = status;
@@ -784,21 +823,23 @@ class HotelStore extends ChangeNotifier {
     final gross = unitPrice * quantity;
     final net = gross - discount;
     final tax = net * Brand.defaultTaxRate;
-    charges.add(Charge(
-      id: Fmt.chargeId(++_chargeSeq),
-      stayId: stayId,
-      description: description,
-      category: category,
-      quantity: quantity,
-      unitPrice: unitPrice,
-      gross: gross,
-      discount: discount,
-      net: net,
-      tax: tax,
-      at: DateTime.now(),
-      source: 'manual',
-      createdBy: actor,
-    ));
+    charges.add(
+      Charge(
+        id: Fmt.chargeId(++_chargeSeq),
+        stayId: stayId,
+        description: description,
+        category: category,
+        quantity: quantity,
+        unitPrice: unitPrice,
+        gross: gross,
+        discount: discount,
+        net: net,
+        tax: tax,
+        at: DateTime.now(),
+        source: 'manual',
+        createdBy: actor,
+      ),
+    );
     _audit(actor, 'add-charge', stayId, '$description • ${Fmt.money(net)}');
     notifyListeners();
   }
@@ -810,16 +851,23 @@ class HotelStore extends ChangeNotifier {
     required String reference,
     required String actor,
   }) {
-    payments.add(Payment(
-      id: Fmt.paymentId(++_paySeq),
-      stayId: stayId,
-      method: method,
-      amount: amount,
-      at: DateTime.now(),
-      reference: reference,
-      recordedBy: actor,
-    ));
-    _audit(actor, 'record-payment', stayId, '${Fmt.money(amount)} • $reference');
+    payments.add(
+      Payment(
+        id: Fmt.paymentId(++_paySeq),
+        stayId: stayId,
+        method: method,
+        amount: amount,
+        at: DateTime.now(),
+        reference: reference,
+        recordedBy: actor,
+      ),
+    );
+    _audit(
+      actor,
+      'record-payment',
+      stayId,
+      '${Fmt.money(amount)} • $reference',
+    );
     notifyListeners();
   }
 
@@ -847,8 +895,12 @@ class HotelStore extends ChangeNotifier {
     );
     extensionRequests.insert(0, ext);
     stay.status = StayStatus.extensionPending;
-    _audit('guest', 'request-extension', stayId,
-        'to ${Fmt.dateNum(requestedCheckout)}, cost ${Fmt.money(cost)}');
+    _audit(
+      'guest',
+      'request-extension',
+      stayId,
+      'to ${Fmt.dateNum(requestedCheckout)}, cost ${Fmt.money(cost)}',
+    );
     _notify(
       title: 'Extension request • Room ${roomById(stay.roomId)?.number}',
       body: 'Requested checkout ${Fmt.dateShort(requestedCheckout)}',
@@ -864,30 +916,42 @@ class HotelStore extends ChangeNotifier {
     final stay = stayById(ext.stayId)!;
     // Re-check availability
     final room = roomById(stay.roomId)!;
-    if (_roomOccupiedInRangeExcluding(room, stay, ext.currentCheckout, ext.requestedCheckout)) {
+    if (_roomOccupiedInRangeExcluding(
+      room,
+      stay,
+      ext.currentCheckout,
+      ext.requestedCheckout,
+    )) {
       return false;
     }
     stay.checkOut = ext.requestedCheckout;
     stay.status = StayStatus.inHouse;
     ext.approved = true;
     // Add charge for extension
-    charges.add(Charge(
-      id: Fmt.chargeId(++_chargeSeq),
-      stayId: stay.id,
-      description: 'Extension ${Fmt.nights(ext.currentCheckout, ext.requestedCheckout)} ${Fmt.nights(ext.currentCheckout, ext.requestedCheckout) == 1 ? 'night' : 'nights'}',
-      category: 'Room',
-      quantity: Fmt.nights(ext.currentCheckout, ext.requestedCheckout),
-      unitPrice: roomTypeById(room.roomTypeId)!.basePrice,
-      gross: ext.additionalCost,
-      discount: 0,
-      net: ext.additionalCost,
-      tax: ext.additionalCost * Brand.defaultTaxRate,
-      at: DateTime.now(),
-      source: 'room',
-      createdBy: actor,
-    ));
-    _audit(actor, 'approve-extension', stay.id,
-        'to ${Fmt.dateNum(ext.requestedCheckout)}');
+    charges.add(
+      Charge(
+        id: Fmt.chargeId(++_chargeSeq),
+        stayId: stay.id,
+        description:
+            'Extension ${Fmt.nights(ext.currentCheckout, ext.requestedCheckout)} ${Fmt.nights(ext.currentCheckout, ext.requestedCheckout) == 1 ? 'night' : 'nights'}',
+        category: 'Room',
+        quantity: Fmt.nights(ext.currentCheckout, ext.requestedCheckout),
+        unitPrice: roomTypeById(room.roomTypeId)!.basePrice,
+        gross: ext.additionalCost,
+        discount: 0,
+        net: ext.additionalCost,
+        tax: ext.additionalCost * Brand.defaultTaxRate,
+        at: DateTime.now(),
+        source: 'room',
+        createdBy: actor,
+      ),
+    );
+    _audit(
+      actor,
+      'approve-extension',
+      stay.id,
+      'to ${Fmt.dateNum(ext.requestedCheckout)}',
+    );
     _notify(
       title: 'Extension approved',
       body: 'New checkout: ${Fmt.dateShort(ext.requestedCheckout)}',
@@ -916,7 +980,11 @@ class HotelStore extends ChangeNotifier {
   }
 
   bool _roomOccupiedInRangeExcluding(
-      Room room, Stay exclude, DateTime ci, DateTime co) {
+    Room room,
+    Stay exclude,
+    DateTime ci,
+    DateTime co,
+  ) {
     for (final s in stays) {
       if (s.id == exclude.id) continue;
       if (s.roomId != room.id) continue;
@@ -940,13 +1008,15 @@ class HotelStore extends ChangeNotifier {
     final stay = stayById(stayId)!;
     final oldRoom = roomById(stay.roomId)!;
     final newRoom = roomById(newRoomId)!;
-    stay.transfers.add(RoomTransfer(
-      at: DateTime.now(),
-      fromRoomId: oldRoom.id,
-      toRoomId: newRoom.id,
-      reason: reason,
-      approvedBy: actor,
-    ));
+    stay.transfers.add(
+      RoomTransfer(
+        at: DateTime.now(),
+        fromRoomId: oldRoom.id,
+        toRoomId: newRoom.id,
+        reason: reason,
+        approvedBy: actor,
+      ),
+    );
     oldRoom.status = RoomStatus.dirty;
     oldRoom.currentStayId = null;
     stay.roomId = newRoom.id;
@@ -954,8 +1024,12 @@ class HotelStore extends ChangeNotifier {
     newRoom.currentStayId = stay.id;
     final res = reservationById(stay.reservationId);
     if (res != null) res.assignedRoomId = newRoom.id;
-    _audit(actor, 'room-transfer', stayId,
-        '${oldRoom.number} → ${newRoom.number} ($reason)');
+    _audit(
+      actor,
+      'room-transfer',
+      stayId,
+      '${oldRoom.number} → ${newRoom.number} ($reason)',
+    );
     _notify(
       title: 'Room changed',
       body: 'You have been moved to room ${newRoom.number}',
@@ -983,17 +1057,13 @@ class HotelStore extends ChangeNotifier {
     _audit('guest', 'request-checkout', stayId, null);
     _notify(
       title: 'Checkout request • Room ${roomById(stay.roomId)?.number}',
-      body:
-          'Outstanding ${Fmt.money(outstandingBalance(stayId))}',
+      body: 'Outstanding ${Fmt.money(outstandingBalance(stayId))}',
       scope: 'reception',
     );
     notifyListeners();
   }
 
-  void completeCheckout({
-    required String stayId,
-    required String actor,
-  }) {
+  void completeCheckout({required String stayId, required String actor}) {
     final stay = stayById(stayId);
     if (stay == null) return;
     stay.status = StayStatus.checkedOut;
@@ -1030,7 +1100,12 @@ class HotelStore extends ChangeNotifier {
     );
   }
 
-  void _auditManual(String actor, String action, String target, String? detail) {
+  void _auditManual(
+    String actor,
+    String action,
+    String target,
+    String? detail,
+  ) {
     _audit(actor, action, target, detail);
     notifyListeners();
   }
@@ -1086,7 +1161,12 @@ class HotelStore extends ChangeNotifier {
     final r = roomById(roomId);
     if (r == null) return;
     r.active = !r.active;
-    _audit('admin', 'toggle-room-active', roomId, r.active ? 'active' : 'inactive');
+    _audit(
+      'admin',
+      'toggle-room-active',
+      roomId,
+      r.active ? 'active' : 'inactive',
+    );
     notifyListeners();
   }
 

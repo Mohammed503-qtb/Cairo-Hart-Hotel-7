@@ -35,11 +35,7 @@ class AppTheme {
     return _build(scheme, _sandDark, const Color(0xFFEDE3D0));
   }
 
-  static ThemeData _build(
-    ColorScheme scheme,
-    Color scaffoldBg,
-    Color ink,
-  ) {
+  static ThemeData _build(ColorScheme scheme, Color scaffoldBg, Color ink) {
     final isDark = scheme.brightness == Brightness.dark;
     return ThemeData(
       useMaterial3: true,
@@ -77,9 +73,7 @@ class AppTheme {
           fontWeight: FontWeight.w600,
         ),
         side: BorderSide.none,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -88,10 +82,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -101,10 +92,7 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
           side: BorderSide(color: scheme.primary.withOpacity(0.5)),
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -117,7 +105,10 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: ink.withOpacity(0.04),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: ink.withOpacity(0.15)),
@@ -147,17 +138,11 @@ class AppTheme {
         height: 64,
         indicatorColor: scheme.primary.withOpacity(0.14),
         labelTextStyle: WidgetStatePropertyAll(
-          TextStyle(
-            fontSize: 11.5,
-            fontWeight: FontWeight.w700,
-            color: ink,
-          ),
+          TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: ink),
         ),
       ),
       listTileTheme: ListTileThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
       textTheme: _textTheme(ink),
     );
@@ -181,29 +166,14 @@ class AppTheme {
         fontWeight: FontWeight.w800,
         letterSpacing: -0.2,
       ),
-      headlineSmall: base.copyWith(
-        fontSize: 19,
-        fontWeight: FontWeight.w800,
-      ),
-      titleLarge: base.copyWith(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-      ),
-      titleMedium: base.copyWith(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-      ),
-      titleSmall: base.copyWith(
-        fontSize: 14,
-        fontWeight: FontWeight.w700,
-      ),
+      headlineSmall: base.copyWith(fontSize: 19, fontWeight: FontWeight.w800),
+      titleLarge: base.copyWith(fontSize: 18, fontWeight: FontWeight.w700),
+      titleMedium: base.copyWith(fontSize: 16, fontWeight: FontWeight.w700),
+      titleSmall: base.copyWith(fontSize: 14, fontWeight: FontWeight.w700),
       bodyLarge: base.copyWith(fontSize: 15.5, height: 1.55),
       bodyMedium: base.copyWith(fontSize: 14.5, height: 1.5),
       bodySmall: base.copyWith(fontSize: 12.5, height: 1.4),
-      labelLarge: base.copyWith(
-        fontSize: 14.5,
-        fontWeight: FontWeight.w700,
-      ),
+      labelLarge: base.copyWith(fontSize: 14.5, fontWeight: FontWeight.w700),
       labelSmall: base.copyWith(
         fontSize: 11.5,
         fontWeight: FontWeight.w600,

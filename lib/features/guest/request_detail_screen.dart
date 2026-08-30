@@ -41,10 +41,15 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
       );
     }
     final room = store.roomById(r.roomId);
-    final service = r.serviceId == null ? null : store.firstWhereOrNull(store.services, (s) => s.id == r.serviceId);
+    final service = r.serviceId == null
+        ? null
+        : store.firstWhereOrNull(store.services, (s) => s.id == r.serviceId);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text('${l.requestNo} ${r.id}'),
       ),
       body: Column(
@@ -67,50 +72,78 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                               children: [
                                 Icon(r.category.icon, color: r.status.color),
                                 const SizedBox(width: 8),
-                                Expanded(child: Text(r.title, style: theme.textTheme.headlineSmall)),
+                                Expanded(
+                                  child: Text(
+                                    r.title,
+                                    style: theme.textTheme.headlineSmall,
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 8),
                             Wrap(
                               spacing: 8,
                               children: [
-                                StatusChip(label: r.status.label, color: r.status.color),
+                                StatusChip(
+                                  label: r.status.label,
+                                  color: r.status.color,
+                                ),
                                 StatusChip(
                                   label: '${l.roomLabel} ${room?.number ?? ""}',
                                   color: theme.colorScheme.primary,
                                 ),
                                 if (r.priority == RequestPriority.urgent)
-                                  const StatusChip(label: 'Urgent', color: Color(0xFFC62828)),
+                                  const StatusChip(
+                                    label: 'Urgent',
+                                    color: Color(0xFFC62828),
+                                  ),
                                 if (r.assignedTo != null)
-                                  StatusChip(label: r.assignedTo!, color: const Color(0xFF00838F)),
+                                  StatusChip(
+                                    label: r.assignedTo!,
+                                    color: const Color(0xFF00838F),
+                                  ),
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Text(r.description, style: theme.textTheme.bodyLarge),
+                            Text(
+                              r.description,
+                              style: theme.textTheme.bodyLarge,
+                            ),
                             const SizedBox(height: 8),
                             Text(
                               l.isArabic
                                   ? 'أُنشئ ${Fmt.dateTime(r.createdAt)}'
                                   : 'Created ${Fmt.dateTime(r.createdAt)}',
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                color: theme.colorScheme.onSurface.withOpacity(
+                                  0.6,
+                                ),
                               ),
                             ),
                             if (service != null) ...[
                               const SizedBox(height: 6),
-                              Text('${l.category}: ${l.isArabic ? service.category.labelAr : service.category.label}',
-                                  style: theme.textTheme.bodySmall),
+                              Text(
+                                '${l.category}: ${l.isArabic ? service.category.labelAr : service.category.label}',
+                                style: theme.textTheme.bodySmall,
+                              ),
                             ],
                           ],
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(l.isArabic ? 'المحادثة' : 'Conversation',
-                        style: theme.textTheme.titleLarge),
+                    Text(
+                      l.isArabic ? 'المحادثة' : 'Conversation',
+                      style: theme.textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 8),
                     if (r.messages.isEmpty)
-                      EmptyState(icon: Icons.chat_bubble_outline, message: l.isArabic ? 'لا رسائل بعد' : 'No messages yet')
+                      EmptyState(
+                        icon: Icons.chat_bubble_outline,
+                        message: l.isArabic
+                            ? 'لا رسائل بعد'
+                            : 'No messages yet',
+                      )
                     else
                       ...r.messages.map((m) => _MsgBubble(m: m)),
                   ],
@@ -127,7 +160,9 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                     child: TextField(
                       controller: _msgCtrl,
                       decoration: InputDecoration(
-                        hintText: l.isArabic ? 'اكتب رسالة...' : 'Type a message...',
+                        hintText: l.isArabic
+                            ? 'اكتب رسالة...'
+                            : 'Type a message...',
                         prefixIcon: const Icon(Icons.chat_bubble_outline),
                       ),
                     ),
@@ -174,11 +209,17 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
             id: 'm${DateTime.now().millisecondsSinceEpoch + 1}',
             authorId: 'u2',
             fromStaff: true,
-            text: l.isArabic ? 'شكراً لك، استلمنا طلبك ونعمل عليه.' : 'Thank you, we received your request and are on it.',
+            text: l.isArabic
+                ? 'شكراً لك، استلمنا طلبك ونعمل عليه.'
+                : 'Thank you, we received your request and are on it.',
             at: DateTime.now(),
           ),
         );
-        store.updateRequestStatus(widget.requestId, RequestStatus.acknowledged, assignedTo: 'Reception — Layla');
+        store.updateRequestStatus(
+          widget.requestId,
+          RequestStatus.acknowledged,
+          assignedTo: 'Reception — Layla',
+        );
       });
     }
   }
@@ -197,7 +238,9 @@ class _MsgBubble extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.7),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.sizeOf(context).width * 0.7,
+        ),
         decoration: BoxDecoration(
           color: mine
               ? theme.colorScheme.primary
@@ -223,7 +266,9 @@ class _MsgBubble extends StatelessWidget {
               Fmt.time(m.at),
               style: TextStyle(
                 fontSize: 10,
-                color: mine ? Colors.white70 : theme.colorScheme.onSurface.withOpacity(0.5),
+                color: mine
+                    ? Colors.white70
+                    : theme.colorScheme.onSurface.withOpacity(0.5),
               ),
             ),
           ],

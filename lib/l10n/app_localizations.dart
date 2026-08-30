@@ -37,15 +37,18 @@ class L10n extends ChangeNotifier {
 
   // -- Strings --
   String get appName => isArabic ? 'فندق لوميير جراند' : 'Lumière Grand Hotel';
-  String get tagline => isArabic ? 'إقامة. خدمة. هدوء.' : 'Stay. Service. Serenity.';
+  String get tagline =>
+      isArabic ? 'إقامة. خدمة. هدوء.' : 'Stay. Service. Serenity.';
 
-  String get chooseExperience => isArabic ? 'اختر تجربتك' : 'Choose your experience';
+  String get chooseExperience =>
+      isArabic ? 'اختر تجربتك' : 'Choose your experience';
   String get chooseExperienceSub => isArabic
       ? 'منصة فندقية متكاملة: موقع الحجز، تطبيق النزيل، الاستقبال، والإدارة'
       : 'One integrated hotel platform: booking site, guest app, reception & admin';
   String get publicWebsite => isArabic ? 'موقع الحجز العام' : 'Public Website';
-  String get publicWebsiteSub =>
-      isArabic ? 'اكتشف الفندق واحجز إقامتك' : 'Discover the hotel & book your stay';
+  String get publicWebsiteSub => isArabic
+      ? 'اكتشف الفندق واحجز إقامتك'
+      : 'Discover the hotel & book your stay';
   String get guestApp => isArabic ? 'تطبيق النزيل' : 'Guest App';
   String get guestAppSub => isArabic
       ? 'ادخل برمز الدخول الخاص بإقامتك'
@@ -54,7 +57,8 @@ class L10n extends ChangeNotifier {
   String get receptionSub =>
       isArabic ? 'عمليات الاستقبال والإقامة' : 'Front-desk & stay operations';
   String get admin => isArabic ? 'الإدارة' : 'Admin';
-  String get adminSub => isArabic ? 'إعدادات الفندق والتدقيق' : 'Hotel config & audit';
+  String get adminSub =>
+      isArabic ? 'إعدادات الفندق والتدقيق' : 'Hotel config & audit';
 
   String get enter => isArabic ? 'دخول' : 'Enter';
   String get back => isArabic ? 'رجوع' : 'Back';
@@ -69,7 +73,8 @@ class L10n extends ChangeNotifier {
   String get gallery => isArabic ? 'المعرض' : 'Gallery';
   String get contact => isArabic ? 'تواصل' : 'Contact';
   String get bookNow => isArabic ? 'احجز الآن' : 'Book Now';
-  String get checkAvailability => isArabic ? 'تحقق من التوفر' : 'Check Availability';
+  String get checkAvailability =>
+      isArabic ? 'تحقق من التوفر' : 'Check Availability';
   String get checkIn => isArabic ? 'تسجيل دخول' : 'Check-In';
   String get checkOut => isArabic ? 'تسجيل مغادرة' : 'Check-Out';
   String get arrivals => isArabic ? 'القادمون' : 'Arrivals';
@@ -97,7 +102,8 @@ class L10n extends ChangeNotifier {
 
   String get enterAccessCode =>
       isArabic ? 'أدخل رمز الدخول للفندق' : 'Enter Hotel Access Code';
-  String get accessCodeHint => isArabic ? 'رمز الدخول المكوّن من 6 أرقام' : '6-digit access code';
+  String get accessCodeHint =>
+      isArabic ? 'رمز الدخول المكوّن من 6 أرقام' : '6-digit access code';
   String get activate => isArabic ? 'تفعيل' : 'Activate';
   String get invalidCode =>
       isArabic ? 'رمز غير صالح أو منتهي الصلاحية' : 'Invalid or expired code';
@@ -122,10 +128,12 @@ class L10n extends ChangeNotifier {
   String get email => isArabic ? 'البريد الإلكتروني' : 'Email';
   String get phone => isArabic ? 'الهاتف' : 'Phone';
   String get paymentMethod => isArabic ? 'طريقة الدفع' : 'Payment method';
-  String get bookingConfirmed => isArabic ? 'تم تأكيد الحجز' : 'Booking Confirmed';
+  String get bookingConfirmed =>
+      isArabic ? 'تم تأكيد الحجز' : 'Booking Confirmed';
   String get reservationNo => isArabic ? 'رقم الحجز' : 'Reservation No.';
   String get bookAnother => isArabic ? 'حجز جديد' : 'Book another stay';
-  String get selectRoomType => isArabic ? 'اختر نوع الغرفة' : 'Select room type';
+  String get selectRoomType =>
+      isArabic ? 'اختر نوع الغرفة' : 'Select room type';
 
   String get welcomeGuest => isArabic ? 'مرحباً' : 'Welcome';
   String get roomLabel => isArabic ? 'الغرفة' : 'Room';
@@ -136,14 +144,16 @@ class L10n extends ChangeNotifier {
   String get description => isArabic ? 'الوصف' : 'Description';
   String get sendRequest => isArabic ? 'إرسال الطلب' : 'Send request';
   String get urgent => isArabic ? 'عاجل' : 'Urgent';
-  String get noRequestsYet => isArabic ? 'لا توجد طلبات بعد' : 'No requests yet';
+  String get noRequestsYet =>
+      isArabic ? 'لا توجد طلبات بعد' : 'No requests yet';
   String get markComplete => isArabic ? 'تم الإنجاز' : 'Mark completed';
   String get acknowledge => isArabic ? 'استلام' : 'Acknowledge';
   String get assign => isArabic ? 'إسناد' : 'Assign';
   String get startProgress => isArabic ? 'بدء المعالجة' : 'Start';
   String get requestNo => isArabic ? 'طلب رقم' : 'Request';
 
-  String get outstandingBalance => isArabic ? 'الرصيد المستحق' : 'Outstanding balance';
+  String get outstandingBalance =>
+      isArabic ? 'الرصيد المستحق' : 'Outstanding balance';
   String get charges => isArabic ? 'المبالغ المضافة' : 'Charges';
   String get payments => isArabic ? 'المدفوعات' : 'Payments';
   String get addCharge => isArabic ? 'إضافة مبلغ' : 'Add charge';
@@ -154,12 +164,13 @@ class L10n extends ChangeNotifier {
 
   String get assignRoom => isArabic ? 'إسناد غرفة' : 'Assign room';
   String get verifyGuest => isArabic ? 'التحقق من النزيل' : 'Verify guest';
-  String get completeCheckIn => isArabic ? 'إتمام تسجيل الدخول' : 'Complete check-in';
-  String get accessCodeReady => isArabic
-      ? 'رمز دخول النزيل جاهز'
-      : 'Guest access code is ready';
+  String get completeCheckIn =>
+      isArabic ? 'إتمام تسجيل الدخول' : 'Complete check-in';
+  String get accessCodeReady =>
+      isArabic ? 'رمز دخول النزيل جاهز' : 'Guest access code is ready';
   String get noArrivals => isArabic ? 'لا قادمون اليوم' : 'No arrivals today';
-  String get noDepartures => isArabic ? 'لا مغادرون اليوم' : 'No departures today';
+  String get noDepartures =>
+      isArabic ? 'لا مغادرون اليوم' : 'No departures today';
   String get noInHouse => isArabic ? 'لا نزلاء حالياً' : 'No in-house guests';
 
   String get occupancy => isArabic ? 'نسبة الإشغال' : 'Occupancy';
@@ -168,12 +179,12 @@ class L10n extends ChangeNotifier {
   String get todaysBookings => isArabic ? 'حجوزات اليوم' : 'Today\'s bookings';
 
   String get roomTypes => isArabic ? 'أنواع الغرف' : 'Room Types';
-  String get servicesCatalog => isArabic ? 'كتالوج الخدمات' : 'Services catalog';
+  String get servicesCatalog =>
+      isArabic ? 'كتالوج الخدمات' : 'Services catalog';
   String get users => isArabic ? 'المستخدمون' : 'Users';
   String get hotelSettings => isArabic ? 'إعدادات الفندق' : 'Hotel settings';
-  String get auditTrail => isArabic
-      ? 'سجل العمليات الحساسة'
-      : 'Sensitive operations audit trail';
+  String get auditTrail =>
+      isArabic ? 'سجل العمليات الحساسة' : 'Sensitive operations audit trail';
 
   String get confirmCheckoutMsg => isArabic
       ? 'سيتم إغلاق الإقامة، تصبح الغرفة بحاجة للتنظيف، ويتعطل وصول النزيل. متابعة؟'

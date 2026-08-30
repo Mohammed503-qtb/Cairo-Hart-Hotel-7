@@ -20,7 +20,10 @@ class _ReceptionLoginScreenState extends State<ReceptionLoginScreen> {
     final app = context.watch<AppState>();
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/')),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
         title: Text(l.reception),
       ),
       body: SafeArea(
@@ -38,10 +41,18 @@ class _ReceptionLoginScreenState extends State<ReceptionLoginScreen> {
                       color: const Color(0xFFEF6C00).withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.support_agent, size: 44, color: Color(0xFFEF6C00)),
+                    child: const Icon(
+                      Icons.support_agent,
+                      size: 44,
+                      color: Color(0xFFEF6C00),
+                    ),
                   ),
                   const SizedBox(height: 18),
-                  Text(l.receptionSub, textAlign: TextAlign.center, style: theme.textTheme.titleMedium),
+                  Text(
+                    l.receptionSub,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 24),
                   _staffCard(
                     context,
@@ -67,8 +78,13 @@ class _ReceptionLoginScreenState extends State<ReceptionLoginScreen> {
     );
   }
 
-  Widget _staffCard(BuildContext context,
-      {required String name, required String role, required Color color, required IconData icon}) {
+  Widget _staffCard(
+    BuildContext context, {
+    required String name,
+    required String role,
+    required Color color,
+    required IconData icon,
+  }) {
     final l = L10n.of(context);
     final app = context.read<AppState>();
     final roleLabel = role == 'admin' ? l.admin : l.reception;
@@ -83,15 +99,25 @@ class _ReceptionLoginScreenState extends State<ReceptionLoginScreen> {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              CircleAvatar(backgroundColor: color.withOpacity(0.14), child: Icon(icon, color: color)),
+              CircleAvatar(
+                backgroundColor: color.withOpacity(0.14),
+                child: Icon(icon, color: color),
+              ),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('$name — $roleLabel', style: Theme.of(context).textTheme.titleMedium),
-                    Text(l.isArabic ? 'دخول تجريبي بضغطة واحدة' : 'One-tap demo login',
-                        style: Theme.of(context).textTheme.bodySmall),
+                    Text(
+                      '$name — $roleLabel',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      l.isArabic
+                          ? 'دخول تجريبي بضغطة واحدة'
+                          : 'One-tap demo login',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ],
                 ),
               ),

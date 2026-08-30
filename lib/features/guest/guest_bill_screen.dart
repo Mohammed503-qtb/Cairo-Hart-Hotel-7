@@ -28,7 +28,10 @@ class GuestBillScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text(l.myBill),
       ),
       body: SingleChildScrollView(
@@ -40,21 +43,38 @@ class GuestBillScreen extends StatelessWidget {
             children: [
               // Balance summary
               Card(
-                color: (balance > 0 ? const Color(0xFFEF6C00) : const Color(0xFF2E7D32)).withOpacity(0.08),
+                color:
+                    (balance > 0
+                            ? const Color(0xFFEF6C00)
+                            : const Color(0xFF2E7D32))
+                        .withOpacity(0.08),
                 child: Padding(
                   padding: const EdgeInsets.all(18),
                   child: Row(
                     children: [
-                      Icon(balance > 0 ? Icons.account_balance_wallet : Icons.check_circle,
-                          color: balance > 0 ? const Color(0xFFEF6C00) : const Color(0xFF2E7D32)),
+                      Icon(
+                        balance > 0
+                            ? Icons.account_balance_wallet
+                            : Icons.check_circle,
+                        color: balance > 0
+                            ? const Color(0xFFEF6C00)
+                            : const Color(0xFF2E7D32),
+                      ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(l.outstandingBalance, style: theme.textTheme.titleSmall),
-                            Text(Fmt.money(balance),
-                                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+                            Text(
+                              l.outstandingBalance,
+                              style: theme.textTheme.titleSmall,
+                            ),
+                            Text(
+                              Fmt.money(balance),
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -66,40 +86,64 @@ class GuestBillScreen extends StatelessWidget {
               Text(l.charges, style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               if (charges.isEmpty)
-                EmptyState(icon: Icons.receipt_outlined, message: l.isArabic ? 'لا مبالغ' : 'No charges')
+                EmptyState(
+                  icon: Icons.receipt_outlined,
+                  message: l.isArabic ? 'لا مبالغ' : 'No charges',
+                )
               else
-                ...charges.map((c) => Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.receipt_long_outlined),
-                        title: Text(c.description),
-                        subtitle: Text(
-                          '${c.category} • ${Fmt.dateTime(c.at)}',
-                          style: theme.textTheme.bodySmall,
-                        ),
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(Fmt.money(c.net + c.tax), style: theme.textTheme.titleSmall),
-                            Text('${l.taxes}: ${Fmt.money(c.tax)}', style: theme.textTheme.bodySmall),
-                          ],
-                        ),
+                ...charges.map(
+                  (c) => Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.receipt_long_outlined),
+                      title: Text(c.description),
+                      subtitle: Text(
+                        '${c.category} • ${Fmt.dateTime(c.at)}',
+                        style: theme.textTheme.bodySmall,
                       ),
-                    )),
+                      trailing: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            Fmt.money(c.net + c.tax),
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          Text(
+                            '${l.taxes}: ${Fmt.money(c.tax)}',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               const SizedBox(height: 16),
               Text(l.payments, style: theme.textTheme.titleLarge),
               const SizedBox(height: 8),
               if (payments.isEmpty)
-                EmptyState(icon: Icons.payments_outlined, message: l.isArabic ? 'لا مدفوعات' : 'No payments')
+                EmptyState(
+                  icon: Icons.payments_outlined,
+                  message: l.isArabic ? 'لا مدفوعات' : 'No payments',
+                )
               else
-                ...payments.map((p) => Card(
-                      child: ListTile(
-                        leading: const Icon(Icons.payments_outlined),
-                        title: Text('${_method(p.method, l)} • ${p.reference}'),
-                        subtitle: Text(Fmt.dateTime(p.at), style: theme.textTheme.bodySmall),
-                        trailing: Text(Fmt.money(p.amount), style: theme.textTheme.titleSmall?.copyWith(color: const Color(0xFF2E7D32))),
+                ...payments.map(
+                  (p) => Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.payments_outlined),
+                      title: Text('${_method(p.method, l)} • ${p.reference}'),
+                      subtitle: Text(
+                        Fmt.dateTime(p.at),
+                        style: theme.textTheme.bodySmall,
                       ),
-                    )),
+                      trailing: Text(
+                        Fmt.money(p.amount),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: const Color(0xFF2E7D32),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               const SizedBox(height: 16),
               // Summary
               Card(
@@ -110,7 +154,12 @@ class GuestBillScreen extends StatelessWidget {
                       _row(context, l.charges, Fmt.money(total)),
                       _row(context, l.paid, Fmt.money(paid)),
                       const Divider(),
-                      _row(context, l.remaining, Fmt.money(balance), bold: true),
+                      _row(
+                        context,
+                        l.remaining,
+                        Fmt.money(balance),
+                        bold: true,
+                      ),
                     ],
                   ),
                 ),
@@ -140,10 +189,14 @@ class GuestBillScreen extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(k, style: theme.textTheme.bodyMedium)),
-          Text(v,
-              style: bold
-                  ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
-                  : theme.textTheme.titleSmall),
+          Text(
+            v,
+            style: bold
+                ? theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  )
+                : theme.textTheme.titleSmall,
+          ),
         ],
       ),
     );

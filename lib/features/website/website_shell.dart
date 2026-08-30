@@ -49,11 +49,13 @@ class _WebsiteShellState extends State<WebsiteShell> {
       selectedIndex: _index,
       onDestinationSelected: _go,
       destinations: tabs
-          .map((t) => NavigationDestination(
-                icon: Icon(t.icon),
-                selectedIcon: Icon(t.icon),
-                label: t.label,
-              ))
+          .map(
+            (t) => NavigationDestination(
+              icon: Icon(t.icon),
+              selectedIcon: Icon(t.icon),
+              label: t.label,
+            ),
+          )
           .toList(),
     );
 
@@ -85,14 +87,18 @@ class _WebsiteShellState extends State<WebsiteShell> {
             children: tabs
                 .asMap()
                 .entries
-                .map((e) => IconButton(
-                      icon: Icon(e.value.icon,
-                          color: _index == e.key
-                              ? Theme.of(context).colorScheme.primary
-                              : null),
-                      onPressed: () => _go(e.key),
-                      tooltip: e.value.label,
-                    ))
+                .map(
+                  (e) => IconButton(
+                    icon: Icon(
+                      e.value.icon,
+                      color: _index == e.key
+                          ? Theme.of(context).colorScheme.primary
+                          : null,
+                    ),
+                    onPressed: () => _go(e.key),
+                    tooltip: e.value.label,
+                  ),
+                )
                 .toList(),
           )
         else
@@ -102,19 +108,21 @@ class _WebsiteShellState extends State<WebsiteShell> {
               children: tabs
                   .asMap()
                   .entries
-                  .map((e) => TextButton(
-                        onPressed: () => _go(e.key),
-                        style: TextButton.styleFrom(
-                          foregroundColor: _index == e.key
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
+                  .map(
+                    (e) => TextButton(
+                      onPressed: () => _go(e.key),
+                      style: TextButton.styleFrom(
+                        foregroundColor: _index == e.key
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.onSurface
                                   .withOpacity(0.7),
-                        ),
-                        child: Text(e.value.label,
-                            style: const TextStyle(fontWeight: FontWeight.w700)),
-                      ))
+                      ),
+                      child: Text(
+                        e.value.label,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
           ),
@@ -124,9 +132,9 @@ class _WebsiteShellState extends State<WebsiteShell> {
           tooltip: l.switchLang,
         ),
         IconButton(
-          icon: Icon(app.isDark
-              ? Icons.light_mode_outlined
-              : Icons.dark_mode_outlined),
+          icon: Icon(
+            app.isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+          ),
           onPressed: () => app.setThemeMode(
             app.isDark ? AppThemeMode.light : AppThemeMode.dark,
           ),
@@ -166,7 +174,9 @@ class WebsiteHome extends StatelessWidget {
 
     return SingleChildScrollView(
       child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: context.height - kToolbarHeight - 80),
+        constraints: BoxConstraints(
+          minHeight: context.height - kToolbarHeight - 80,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -212,7 +222,9 @@ class WebsiteHome extends StatelessWidget {
                       const SizedBox(height: 24),
                       ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 560),
-                        child: BookingSearchBar(onSearch: () => _openBooking(context, null)),
+                        child: BookingSearchBar(
+                          onSearch: () => _openBooking(context, null),
+                        ),
                       ),
                     ],
                   ),
@@ -227,7 +239,10 @@ class WebsiteHome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l.selectRoomType, style: theme.textTheme.headlineMedium),
+                    Text(
+                      l.selectRoomType,
+                      style: theme.textTheme.headlineMedium,
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       l.isArabic
@@ -285,21 +300,35 @@ class WebsiteHome extends StatelessWidget {
                   title: l.policies,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: (l.isArabic ? store.hotel.policiesAr : store.hotel.policies)
-                        .map((p) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.check_circle_outline,
+                    children:
+                        (l.isArabic
+                                ? store.hotel.policiesAr
+                                : store.hotel.policies)
+                            .map(
+                              (p) => Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.check_circle_outline,
                                       size: 18,
-                                      color: theme.colorScheme.primary),
-                                  const SizedBox(width: 8),
-                                  Expanded(child: Text(p, style: theme.textTheme.bodyMedium)),
-                                ],
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        p,
+                                        style: theme.textTheme.bodyMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ))
-                        .toList(),
+                            )
+                            .toList(),
                   ),
                 ),
               ),
@@ -335,10 +364,10 @@ class WebsiteHome extends StatelessWidget {
   }
 
   void _openBooking(BuildContext context, RoomType? type) {
-    context.push('/website/booking', extra: {
-      'roomTypeId': type?.id,
-      'adults': type?.defaultAdults ?? 2,
-    });
+    context.push(
+      '/website/booking',
+      extra: {'roomTypeId': type?.id, 'adults': type?.defaultAdults ?? 2},
+    );
   }
 }
 
@@ -402,15 +431,17 @@ class HotelFooter extends StatelessWidget {
         children: [
           Text(title, style: theme.textTheme.titleSmall),
           const SizedBox(height: 8),
-          ...items.map((i) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 2),
-                child: Text(
-                  i,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                  ),
+          ...items.map(
+            (i) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Text(
+                i,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -456,13 +487,15 @@ class RoomTypeCard extends StatelessWidget {
                       runSpacing: 4,
                       children: type.amenities
                           .take(3)
-                          .map((a) => Chip(
-                                label: Text(a),
-                                visualDensity: VisualDensity.compact,
-                                padding: EdgeInsets.zero,
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              ))
+                          .map(
+                            (a) => Chip(
+                              label: Text(a),
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          )
                           .toList(),
                     ),
                     const Spacer(),
@@ -492,7 +525,8 @@ class RoomTypeCard extends StatelessWidget {
                           ),
                         ),
                         FilledButton(
-                          onPressed: () => context.push('/website/room/${type.id}'),
+                          onPressed: () =>
+                              context.push('/website/room/${type.id}'),
                           child: Text(l.bookNow),
                         ),
                       ],
@@ -538,9 +572,7 @@ class RoomsPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 18),
-            BookingSearchBar(
-              onSearch: () => context.push('/website/booking'),
-            ),
+            BookingSearchBar(onSearch: () => context.push('/website/booking')),
             const SizedBox(height: 20),
             GridView.count(
               shrinkWrap: true,
@@ -549,8 +581,9 @@ class RoomsPage extends StatelessWidget {
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               childAspectRatio: isWide ? 0.82 : 0.9,
-              children:
-                  store.roomTypes.map((t) => RoomTypeCard(type: t)).toList(),
+              children: store.roomTypes
+                  .map((t) => RoomTypeCard(type: t))
+                  .toList(),
             ),
           ],
         ),
@@ -588,10 +621,12 @@ class GalleryPage extends StatelessWidget {
       Icons.apartment,
       Icons.king_bed_outlined,
     ];
-    final colors = palettes + [
-      [const Color(0xFF1565C0), const Color(0xFF42A5F5)],
-      [const Color(0xFF6A1B9A), const Color(0xFFAB47BC)],
-    ];
+    final colors =
+        palettes +
+        [
+          [const Color(0xFF1565C0), const Color(0xFF42A5F5)],
+          [const Color(0xFF6A1B9A), const Color(0xFFAB47BC)],
+        ];
     return SingleChildScrollView(
       padding: EdgeInsets.all(isWide ? 32 : 18),
       child: ConstrainedBox(
@@ -650,10 +685,18 @@ class ContactPage extends StatelessWidget {
             SectionCard(
               child: Column(
                 children: [
-                  _contactRow(context, Icons.location_on, l.isArabic ? store.hotel.addressAr : store.hotel.address),
+                  _contactRow(
+                    context,
+                    Icons.location_on,
+                    l.isArabic ? store.hotel.addressAr : store.hotel.address,
+                  ),
                   _contactRow(context, Icons.phone, store.hotel.phone),
                   _contactRow(context, Icons.email, store.hotel.email),
-                  _contactRow(context, Icons.chat, 'WhatsApp +${store.hotel.whatsapp}'),
+                  _contactRow(
+                    context,
+                    Icons.chat,
+                    'WhatsApp +${store.hotel.whatsapp}',
+                  ),
                 ],
               ),
             ),

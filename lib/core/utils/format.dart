@@ -7,10 +7,7 @@ class Fmt {
   Fmt._();
 
   static String money(num amount, {String symbol = Brand.currencySymbol}) {
-    final n = NumberFormat.currency(
-      symbol: '$symbol ',
-      decimalDigits: 2,
-    );
+    final n = NumberFormat.currency(symbol: '$symbol ', decimalDigits: 2);
     return n.format(amount);
   }
 

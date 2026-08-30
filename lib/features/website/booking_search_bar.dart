@@ -80,15 +80,9 @@ class _BookingSearchBarState extends State<BookingSearchBar> {
             direction: wide ? Axis.horizontal : Axis.vertical,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: children
-                .expand((w) => [
-                      if (wide)
-                        SizedBox(
-                          width: 220,
-                          child: w,
-                        )
-                      else
-                        w,
-                    ])
+                .expand(
+                  (w) => [if (wide) SizedBox(width: 220, child: w) else w],
+                )
                 .toList(),
           );
         },
@@ -116,12 +110,13 @@ class _BookingSearchBarState extends State<BookingSearchBar> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.55),
-                      )),
-                  Text(value,
-                      style: theme.textTheme.titleSmall),
+                  Text(
+                    label,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withOpacity(0.55),
+                    ),
+                  ),
+                  Text(value, style: theme.textTheme.titleSmall),
                 ],
               ),
             ),
@@ -165,7 +160,10 @@ class _BookingSearchBarState extends State<BookingSearchBar> {
             (i) => ListTile(
               title: Text('${i + 1} ${L10n.of(context).adults.toLowerCase()}'),
               trailing: _adults == i + 1
-                  ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+                  ? Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.primary,
+                    )
                   : null,
               onTap: () => Navigator.of(c).pop(i + 1),
             ),
@@ -181,11 +179,14 @@ class _BookingSearchBarState extends State<BookingSearchBar> {
       widget.onSearch!();
       return;
     }
-    context.push('/website/booking', extra: {
-      'roomTypeId': widget.roomTypeId,
-      'checkIn': _checkIn,
-      'checkOut': _checkOut,
-      'adults': _adults,
-    });
+    context.push(
+      '/website/booking',
+      extra: {
+        'roomTypeId': widget.roomTypeId,
+        'checkIn': _checkIn,
+        'checkOut': _checkOut,
+        'adults': _adults,
+      },
+    );
   }
 }

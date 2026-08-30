@@ -66,12 +66,7 @@ enum RequestStatus {
 
 enum RequestPriority { normal, urgent }
 
-enum ServiceCategory {
-  housekeeping,
-  maintenance,
-  guestServices,
-  reception,
-}
+enum ServiceCategory { housekeeping, maintenance, guestServices, reception }
 
 enum AppSpace { website, guest, reception, admin }
 

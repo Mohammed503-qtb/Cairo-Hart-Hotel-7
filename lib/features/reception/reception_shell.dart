@@ -52,7 +52,10 @@ class _ReceptionShellState extends State<ReceptionShell> {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Icon(Icons.support_agent, color: Theme.of(context).colorScheme.primary),
+            Icon(
+              Icons.support_agent,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(width: 8),
             Text(l.appName, style: const TextStyle(fontSize: 17)),
             const SizedBox(width: 10),
@@ -62,10 +65,18 @@ class _ReceptionShellState extends State<ReceptionShell> {
           ],
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.translate), onPressed: () => app.toggleLocale(), tooltip: l.switchLang),
           IconButton(
-            icon: Icon(app.isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined),
-            onPressed: () => app.setThemeMode(app.isDark ? AppThemeMode.light : AppThemeMode.dark),
+            icon: const Icon(Icons.translate),
+            onPressed: () => app.toggleLocale(),
+            tooltip: l.switchLang,
+          ),
+          IconButton(
+            icon: Icon(
+              app.isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+            ),
+            onPressed: () => app.setThemeMode(
+              app.isDark ? AppThemeMode.light : AppThemeMode.dark,
+            ),
             tooltip: l.switchTheme,
           ),
           IconButton(
@@ -87,13 +98,17 @@ class _ReceptionShellState extends State<ReceptionShell> {
                   onDestinationSelected: _go,
                   minExtendedWidth: 200,
                   destinations: tabs
-                      .map((t) => NavigationRailDestination(
-                            icon: Icon(t.icon),
-                            label: Text(t.label),
-                          ))
+                      .map(
+                        (t) => NavigationRailDestination(
+                          icon: Icon(t.icon),
+                          label: Text(t.label),
+                        ),
+                      )
                       .toList(),
                 ),
-                Expanded(child: IndexedStack(index: _index, children: _pages)),
+                Expanded(
+                  child: IndexedStack(index: _index, children: _pages),
+                ),
               ],
             )
           : IndexedStack(index: _index, children: _pages),
@@ -103,10 +118,22 @@ class _ReceptionShellState extends State<ReceptionShell> {
               selectedIndex: _index > 3 ? 0 : _index,
               onDestinationSelected: _go,
               destinations: [
-                NavigationDestination(icon: const Icon(Icons.dashboard_outlined), label: l.dashboard),
-                NavigationDestination(icon: const Icon(Icons.login), label: l.arrivals),
-                NavigationDestination(icon: const Icon(Icons.logout), label: l.departures),
-                NavigationDestination(icon: const Icon(Icons.bed), label: l.inHouse),
+                NavigationDestination(
+                  icon: const Icon(Icons.dashboard_outlined),
+                  label: l.dashboard,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.login),
+                  label: l.arrivals,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.logout),
+                  label: l.departures,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.bed),
+                  label: l.inHouse,
+                ),
               ],
             ),
       drawer: isWide
@@ -115,29 +142,41 @@ class _ReceptionShellState extends State<ReceptionShell> {
               child: ListView(
                 children: [
                   DrawerHeader(
-                    decoration: BoxDecoration(color: const Color(0xFFEF6C00).withOpacity(0.1)),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEF6C00).withOpacity(0.1),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const Icon(Icons.support_agent, size: 36, color: Color(0xFFEF6C00)),
+                        const Icon(
+                          Icons.support_agent,
+                          size: 36,
+                          color: Color(0xFFEF6C00),
+                        ),
                         const SizedBox(height: 6),
-                        Text(l.reception, style: Theme.of(context).textTheme.titleLarge),
-                        Text(l.appName, style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          l.reception,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          l.appName,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   ),
                   ...tabs.asMap().entries.map(
-                        (e) => ListTile(
-                          selected: _index == e.key,
-                          leading: Icon(e.value.icon),
-                          title: Text(e.value.label),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            _go(e.key);
-                          },
-                        ),
-                      ),
+                    (e) => ListTile(
+                      selected: _index == e.key,
+                      leading: Icon(e.value.icon),
+                      title: Text(e.value.label),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        _go(e.key);
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -159,25 +198,47 @@ class _DashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L10n.of(context);
     final store = context.watch<HotelStore>();
-    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    final occupied = store.rooms.where((r) => r.status == RoomStatus.occupied).length;
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    final occupied = store.rooms
+        .where((r) => r.status == RoomStatus.occupied)
+        .length;
     final available = store.rooms.where((r) => r.status.isSellable).length;
-    final arrivals = store.reservations.where((r) =>
-        r.status == ReservationStatus.confirmed &&
-        r.checkIn.year == today.year &&
-        r.checkIn.month == today.month &&
-        r.checkIn.day == today.day).length;
-    final departures = store.stays.where((s) =>
-        s.status == StayStatus.inHouse &&
-        s.checkOut.year == today.year &&
-        s.checkOut.month == today.month &&
-        s.checkOut.day == today.day).length;
-    final pendingReqs = store.requests.where((r) =>
-        r.status == RequestStatus.newRequest ||
-        r.status == RequestStatus.acknowledged ||
-        r.status == RequestStatus.assigned).length;
-    final inProgress = store.requests.where((r) => r.status == RequestStatus.inProgress).length;
-    final occupancy = store.rooms.isEmpty ? 0.0 : (occupied / store.rooms.length * 100);
+    final arrivals = store.reservations
+        .where(
+          (r) =>
+              r.status == ReservationStatus.confirmed &&
+              r.checkIn.year == today.year &&
+              r.checkIn.month == today.month &&
+              r.checkIn.day == today.day,
+        )
+        .length;
+    final departures = store.stays
+        .where(
+          (s) =>
+              s.status == StayStatus.inHouse &&
+              s.checkOut.year == today.year &&
+              s.checkOut.month == today.month &&
+              s.checkOut.day == today.day,
+        )
+        .length;
+    final pendingReqs = store.requests
+        .where(
+          (r) =>
+              r.status == RequestStatus.newRequest ||
+              r.status == RequestStatus.acknowledged ||
+              r.status == RequestStatus.assigned,
+        )
+        .length;
+    final inProgress = store.requests
+        .where((r) => r.status == RequestStatus.inProgress)
+        .length;
+    final occupancy = store.rooms.isEmpty
+        ? 0.0
+        : (occupied / store.rooms.length * 100);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -186,7 +247,10 @@ class _DashboardPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.dashboard, style: Theme.of(context).textTheme.headlineMedium),
+            Text(
+              l.dashboard,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
             const SizedBox(height: 16),
             GridView.count(
               shrinkWrap: true,
@@ -196,14 +260,55 @@ class _DashboardPage extends StatelessWidget {
               mainAxisSpacing: 14,
               childAspectRatio: 1.5,
               children: [
-                KpiCard(label: l.occupancy, value: '${occupancy.toStringAsFixed(0)}%', icon: Icons.dashboard, color: const Color(0xFF9A6A12)),
-                KpiCard(label: l.availableRooms, value: '$available', icon: Icons.bed_outlined, color: const Color(0xFF2E7D32), subtitle: '${store.rooms.length} ${l.allRooms}'),
-                KpiCard(label: l.arrivals, value: '$arrivals', icon: Icons.login, color: const Color(0xFF1565C0)),
-                KpiCard(label: l.departures, value: '$departures', icon: Icons.logout, color: const Color(0xFFEF6C00)),
-                KpiCard(label: l.pendingRequests, value: '$pendingReqs', icon: Icons.support_agent, color: const Color(0xFF6A1B9A)),
-                KpiCard(label: l.isArabic ? 'طلبات قيد التنفيذ' : 'In progress', value: '$inProgress', icon: Icons.autorenew, color: const Color(0xFF00838F)),
-                KpiCard(label: l.inHouse, value: '${store.activeStays.length}', icon: Icons.people_outline, color: const Color(0xFF5C6B5A)),
-                KpiCard(label: l.reservations, value: '${store.reservations.length}', icon: Icons.book_outlined, color: const Color(0xFFAD1457)),
+                KpiCard(
+                  label: l.occupancy,
+                  value: '${occupancy.toStringAsFixed(0)}%',
+                  icon: Icons.dashboard,
+                  color: const Color(0xFF9A6A12),
+                ),
+                KpiCard(
+                  label: l.availableRooms,
+                  value: '$available',
+                  icon: Icons.bed_outlined,
+                  color: const Color(0xFF2E7D32),
+                  subtitle: '${store.rooms.length} ${l.allRooms}',
+                ),
+                KpiCard(
+                  label: l.arrivals,
+                  value: '$arrivals',
+                  icon: Icons.login,
+                  color: const Color(0xFF1565C0),
+                ),
+                KpiCard(
+                  label: l.departures,
+                  value: '$departures',
+                  icon: Icons.logout,
+                  color: const Color(0xFFEF6C00),
+                ),
+                KpiCard(
+                  label: l.pendingRequests,
+                  value: '$pendingReqs',
+                  icon: Icons.support_agent,
+                  color: const Color(0xFF6A1B9A),
+                ),
+                KpiCard(
+                  label: l.isArabic ? 'طلبات قيد التنفيذ' : 'In progress',
+                  value: '$inProgress',
+                  icon: Icons.autorenew,
+                  color: const Color(0xFF00838F),
+                ),
+                KpiCard(
+                  label: l.inHouse,
+                  value: '${store.activeStays.length}',
+                  icon: Icons.people_outline,
+                  color: const Color(0xFF5C6B5A),
+                ),
+                KpiCard(
+                  label: l.reservations,
+                  value: '${store.reservations.length}',
+                  icon: Icons.book_outlined,
+                  color: const Color(0xFFAD1457),
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -227,12 +332,20 @@ class _TodayArrivals extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L10n.of(context);
     final store = context.watch<HotelStore>();
-    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    final arrivals = store.reservations.where((r) =>
-        r.status == ReservationStatus.confirmed &&
-        r.checkIn.year == today.year &&
-        r.checkIn.month == today.month &&
-        r.checkIn.day == today.day).toList();
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    final arrivals = store.reservations
+        .where(
+          (r) =>
+              r.status == ReservationStatus.confirmed &&
+              r.checkIn.year == today.year &&
+              r.checkIn.month == today.month &&
+              r.checkIn.day == today.day,
+        )
+        .toList();
     return SectionCard(
       title: l.arrivals,
       actionLabel: l.isArabic ? 'عرض الكل' : 'View all',
@@ -274,7 +387,10 @@ class _RecentRequests extends StatelessWidget {
                   leading: Icon(r.category.icon, color: r.status.color),
                   title: Text(r.title),
                   subtitle: Text('${l.roomLabel} ${room?.number} • ${r.id}'),
-                  trailing: StatusChip(label: r.status.label, color: r.status.color),
+                  trailing: StatusChip(
+                    label: r.status.label,
+                    color: r.status.color,
+                  ),
                 );
               }).toList(),
             ),
@@ -290,12 +406,21 @@ class _ArrivalsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L10n.of(context);
     final store = context.watch<HotelStore>();
-    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    final arrivals = store.reservations.where((r) =>
-        (r.status == ReservationStatus.confirmed || r.status == ReservationStatus.pending) &&
-        r.checkIn.year == today.year &&
-        r.checkIn.month == today.month &&
-        r.checkIn.day == today.day).toList();
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    final arrivals = store.reservations
+        .where(
+          (r) =>
+              (r.status == ReservationStatus.confirmed ||
+                  r.status == ReservationStatus.pending) &&
+              r.checkIn.year == today.year &&
+              r.checkIn.month == today.month &&
+              r.checkIn.day == today.day,
+        )
+        .toList();
     return ScaffoldPage(
       title: l.arrivals,
       child: arrivals.isEmpty
@@ -318,7 +443,9 @@ class _ReservationTile extends StatelessWidget {
     final theme = Theme.of(context);
     final g = store.guestById(res.guestId);
     final t = store.roomTypeById(res.roomTypeId)!;
-    final room = res.assignedRoomId == null ? null : store.roomById(res.assignedRoomId!);
+    final room = res.assignedRoomId == null
+        ? null
+        : store.roomById(res.assignedRoomId!);
     return Card(
       child: InkWell(
         onTap: () => context.push('/reception/reservation/${res.id}'),
@@ -329,7 +456,15 @@ class _ReservationTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: SizedBox(width: 56, height: 56, child: RoomImage(palette: t.palette, icon: t.icon, height: 56)),
+                child: SizedBox(
+                  width: 56,
+                  height: 56,
+                  child: RoomImage(
+                    palette: t.palette,
+                    icon: t.icon,
+                    height: 56,
+                  ),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -339,16 +474,27 @@ class _ReservationTile extends StatelessWidget {
                     Text(g?.name ?? '', style: theme.textTheme.titleMedium),
                     Text(
                       '${res.id} • ${l.isArabic ? t.nameAr : t.name} • ${Fmt.dateShort(res.checkIn)} → ${Fmt.dateShort(res.checkOut)}',
-                      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6)),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      ),
                     ),
                     const SizedBox(height: 6),
                     Wrap(
                       spacing: 6,
                       children: [
-                        StatusChip(label: res.status.label, color: const Color(0xFF1565C0)),
+                        StatusChip(
+                          label: res.status.label,
+                          color: const Color(0xFF1565C0),
+                        ),
                         if (room != null)
-                          StatusChip(label: '${l.roomLabel} ${room.number}', color: const Color(0xFF2E7D32)),
-                        StatusChip(label: Fmt.money(res.price.total), color: const Color(0xFF9A6A12)),
+                          StatusChip(
+                            label: '${l.roomLabel} ${room.number}',
+                            color: const Color(0xFF2E7D32),
+                          ),
+                        StatusChip(
+                          label: Fmt.money(res.price.total),
+                          color: const Color(0xFF9A6A12),
+                        ),
                       ],
                     ),
                   ],
@@ -371,12 +517,21 @@ class _DeparturesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = L10n.of(context);
     final store = context.watch<HotelStore>();
-    final today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-    final deps = store.stays.where((s) =>
-        (s.status == StayStatus.inHouse || s.status == StayStatus.checkoutPending) &&
-        s.checkOut.year == today.year &&
-        s.checkOut.month == today.month &&
-        s.checkOut.day == today.day).toList();
+    final today = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
+    final deps = store.stays
+        .where(
+          (s) =>
+              (s.status == StayStatus.inHouse ||
+                  s.status == StayStatus.checkoutPending) &&
+              s.checkOut.year == today.year &&
+              s.checkOut.month == today.month &&
+              s.checkOut.day == today.day,
+        )
+        .toList();
     return ScaffoldPage(
       title: l.departures,
       child: deps.isEmpty
@@ -396,9 +551,20 @@ class _DeparturesPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        StatusChip(label: s.status.label, color: s.status.color),
+                        StatusChip(
+                          label: s.status.label,
+                          color: s.status.color,
+                        ),
                         const SizedBox(height: 4),
-                        Text(Fmt.money(balance), style: Theme.of(context).textTheme.titleSmall?.copyWith(color: balance > 0 ? const Color(0xFFEF6C00) : const Color(0xFF2E7D32))),
+                        Text(
+                          Fmt.money(balance),
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(
+                                color: balance > 0
+                                    ? const Color(0xFFEF6C00)
+                                    : const Color(0xFF2E7D32),
+                              ),
+                        ),
                       ],
                     ),
                   ),
@@ -432,18 +598,33 @@ class _InHousePage extends StatelessWidget {
                     onTap: () => context.push('/reception/checkout/${s.id}'),
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: SizedBox(width: 50, height: 50, child: RoomImage(palette: t.palette, icon: t.icon, height: 50)),
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: RoomImage(
+                          palette: t.palette,
+                          icon: t.icon,
+                          height: 50,
+                        ),
+                      ),
                     ),
                     title: Text(g?.name ?? ''),
-                    subtitle: Text('${l.roomLabel} ${room.number} • ${l.isArabic ? t.nameAr : t.name} • → ${Fmt.dateShort(s.checkOut)}'),
+                    subtitle: Text(
+                      '${l.roomLabel} ${room.number} • ${l.isArabic ? t.nameAr : t.name} • → ${Fmt.dateShort(s.checkOut)}',
+                    ),
                     trailing: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        StatusChip(label: s.status.label, color: s.status.color),
+                        StatusChip(
+                          label: s.status.label,
+                          color: s.status.color,
+                        ),
                         const SizedBox(height: 4),
-                        Text(Fmt.money(store.outstandingBalance(s.id)),
-                            style: Theme.of(context).textTheme.titleSmall),
+                        Text(
+                          Fmt.money(store.outstandingBalance(s.id)),
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ],
                     ),
                   ),
@@ -467,7 +648,9 @@ class _ReservationsPage extends StatelessWidget {
       title: l.reservations,
       child: list.isEmpty
           ? EmptyState(icon: Icons.book_outlined, message: l.noResults)
-          : Column(children: list.map((r) => _ReservationTile(res: r)).toList()),
+          : Column(
+              children: list.map((r) => _ReservationTile(res: r)).toList(),
+            ),
     );
   }
 }
@@ -493,11 +676,14 @@ class _RoomsBoardPage extends StatelessWidget {
         children: [
           Wrap(
             spacing: 8,
-            children: RoomStatus.values.map((s) => StatusChip(label: s.label, color: s.color)).toList(),
+            children: RoomStatus.values
+                .map((s) => StatusChip(label: s.label, color: s.color))
+                .toList(),
           ),
           const SizedBox(height: 16),
           ...floors.map((f) {
-            final rooms = byFloor[f]!..sort((a, b) => a.number.compareTo(b.number));
+            final rooms = byFloor[f]!
+              ..sort((a, b) => a.number.compareTo(b.number));
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -506,7 +692,9 @@ class _RoomsBoardPage extends StatelessWidget {
                 GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: MediaQuery.sizeOf(context).width >= 900 ? 8 : 4,
+                  crossAxisCount: MediaQuery.sizeOf(context).width >= 900
+                      ? 8
+                      : 4,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                   childAspectRatio: 0.85,
@@ -524,9 +712,17 @@ class _RoomsBoardPage extends StatelessWidget {
                             children: [
                               Icon(t.icon, color: r.status.color, size: 22),
                               const SizedBox(height: 4),
-                              Text(r.number, style: theme.textTheme.titleMedium),
+                              Text(
+                                r.number,
+                                style: theme.textTheme.titleMedium,
+                              ),
                               const SizedBox(height: 2),
-                              Text(r.status.label, style: theme.textTheme.labelSmall?.copyWith(color: r.status.color)),
+                              Text(
+                                r.status.label,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: r.status.color,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -548,7 +744,9 @@ class _RoomsBoardPage extends StatelessWidget {
     final store = context.read<HotelStore>();
     final app = context.read<AppState>();
     final t = store.roomTypeById(r.roomTypeId)!;
-    final stay = r.currentStayId == null ? null : store.stayById(r.currentStayId!);
+    final stay = r.currentStayId == null
+        ? null
+        : store.stayById(r.currentStayId!);
     showModalBottomSheet(
       context: context,
       builder: (c) => SafeArea(
@@ -558,7 +756,10 @@ class _RoomsBoardPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${r.number} • ${l.isArabic ? t.nameAr : t.name}', style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                '${r.number} • ${l.isArabic ? t.nameAr : t.name}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               Text('${l.floor} ${r.floor} • ${r.status.label}'),
               const SizedBox(height: 6),
               if (stay != null) ...[
@@ -571,15 +772,68 @@ class _RoomsBoardPage extends StatelessWidget {
                 runSpacing: 8,
                 children: [
                   if (r.status == RoomStatus.dirty)
-                    ActionChip(label: Text(l.isArabic ? 'بدء التنظيف' : 'Start cleaning'), onPressed: () { store.updateRoomStatus(r.id, RoomStatus.cleaning, 'reception'); Navigator.pop(c); }),
+                    ActionChip(
+                      label: Text(
+                        l.isArabic ? 'بدء التنظيف' : 'Start cleaning',
+                      ),
+                      onPressed: () {
+                        store.updateRoomStatus(
+                          r.id,
+                          RoomStatus.cleaning,
+                          'reception',
+                        );
+                        Navigator.pop(c);
+                      },
+                    ),
                   if (r.status == RoomStatus.cleaning)
-                    ActionChip(label: Text(l.isArabic ? 'تم التنظيف' : 'Mark clean'), onPressed: () { store.updateRoomStatus(r.id, RoomStatus.clean, 'reception'); Navigator.pop(c); }),
-                  if (r.status == RoomStatus.clean || r.status == RoomStatus.inspected)
-                    ActionChip(label: Text(l.isArabic ? 'متاحة' : 'Make available'), onPressed: () { store.updateRoomStatus(r.id, RoomStatus.available, 'reception'); Navigator.pop(c); }),
+                    ActionChip(
+                      label: Text(l.isArabic ? 'تم التنظيف' : 'Mark clean'),
+                      onPressed: () {
+                        store.updateRoomStatus(
+                          r.id,
+                          RoomStatus.clean,
+                          'reception',
+                        );
+                        Navigator.pop(c);
+                      },
+                    ),
+                  if (r.status == RoomStatus.clean ||
+                      r.status == RoomStatus.inspected)
+                    ActionChip(
+                      label: Text(l.isArabic ? 'متاحة' : 'Make available'),
+                      onPressed: () {
+                        store.updateRoomStatus(
+                          r.id,
+                          RoomStatus.available,
+                          'reception',
+                        );
+                        Navigator.pop(c);
+                      },
+                    ),
                   if (r.status != RoomStatus.outOfOrder)
-                    ActionChip(label: Text(l.isArabic ? 'تعطيل' : 'Out of order'), onPressed: () { store.updateRoomStatus(r.id, RoomStatus.outOfOrder, 'reception'); Navigator.pop(c); }),
+                    ActionChip(
+                      label: Text(l.isArabic ? 'تعطيل' : 'Out of order'),
+                      onPressed: () {
+                        store.updateRoomStatus(
+                          r.id,
+                          RoomStatus.outOfOrder,
+                          'reception',
+                        );
+                        Navigator.pop(c);
+                      },
+                    ),
                   if (r.status == RoomStatus.outOfOrder)
-                    ActionChip(label: Text(l.isArabic ? 'إعادة تفعيل' : 'Re-activate'), onPressed: () { store.updateRoomStatus(r.id, RoomStatus.available, 'reception'); Navigator.pop(c); }),
+                    ActionChip(
+                      label: Text(l.isArabic ? 'إعادة تفعيل' : 'Re-activate'),
+                      onPressed: () {
+                        store.updateRoomStatus(
+                          r.id,
+                          RoomStatus.available,
+                          'reception',
+                        );
+                        Navigator.pop(c);
+                      },
+                    ),
                 ],
               ),
             ],
@@ -615,9 +869,11 @@ class _RequestsCenterPage extends StatelessWidget {
           ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: columns
-                  .map((c) => Expanded(
-                        child: _RequestColumn(status: c, items: groups[c] ?? []),
-                      ))
+                  .map(
+                    (c) => Expanded(
+                      child: _RequestColumn(status: c, items: groups[c] ?? []),
+                    ),
+                  )
                   .toList(),
             )
           : DefaultTabController(
@@ -626,15 +882,25 @@ class _RequestsCenterPage extends StatelessWidget {
                 children: [
                   TabBar(
                     isScrollable: true,
-                    tabs: columns.map((c) => Tab(text: '${c.label} (${groups[c]?.length ?? 0})')).toList(),
+                    tabs: columns
+                        .map(
+                          (c) => Tab(
+                            text: '${c.label} (${groups[c]?.length ?? 0})',
+                          ),
+                        )
+                        .toList(),
                   ),
                   Expanded(
                     child: TabBarView(
                       children: columns
-                          .map((c) => ListView(
-                                padding: const EdgeInsets.all(12),
-                                children: (groups[c] ?? []).map((r) => _RequestCard(r)).toList(),
-                              ))
+                          .map(
+                            (c) => ListView(
+                              padding: const EdgeInsets.all(12),
+                              children: (groups[c] ?? [])
+                                  .map((r) => _RequestCard(r))
+                                  .toList(),
+                            ),
+                          )
                           .toList(),
                     ),
                   ),
@@ -669,16 +935,30 @@ class _RequestColumn extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Expanded(child: Text(status.label, style: theme.textTheme.titleSmall?.copyWith(color: status.color))),
-                Text('${items.length}', style: theme.textTheme.titleSmall?.copyWith(color: status.color)),
+                Expanded(
+                  child: Text(
+                    status.label,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: status.color,
+                    ),
+                  ),
+                ),
+                Text(
+                  '${items.length}',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: status.color,
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 8),
-          ...items.map((r) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: _RequestCard(r),
-              )),
+          ...items.map(
+            (r) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: _RequestCard(r),
+            ),
+          ),
         ],
       ),
     );
@@ -708,13 +988,17 @@ class _RequestCard extends StatelessWidget {
                 children: [
                   Icon(r.category.icon, color: r.status.color, size: 18),
                   const SizedBox(width: 6),
-                  Expanded(child: Text(r.title, style: theme.textTheme.titleSmall)),
+                  Expanded(
+                    child: Text(r.title, style: theme.textTheme.titleSmall),
+                  ),
                   StatusChip(label: r.status.label, color: r.status.color),
                 ],
               ),
               const SizedBox(height: 4),
-              Text('${l.roomLabel} ${room?.number} • ${r.id} • ${Fmt.time(r.createdAt)}',
-                  style: theme.textTheme.bodySmall),
+              Text(
+                '${l.roomLabel} ${room?.number} • ${r.id} • ${Fmt.time(r.createdAt)}',
+                style: theme.textTheme.bodySmall,
+              ),
               if (r.priority == RequestPriority.urgent)
                 const StatusChip(label: 'Urgent', color: Color(0xFFC62828)),
             ],

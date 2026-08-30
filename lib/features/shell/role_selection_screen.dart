@@ -71,51 +71,55 @@ class RoleSelectionScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 28),
-                    Text(l.chooseExperience,
-                        style: theme.textTheme.headlineSmall),
+                    Text(
+                      l.chooseExperience,
+                      style: theme.textTheme.headlineSmall,
+                    ),
                     const SizedBox(height: 18),
-                    ResponsiveRoleGrid(spaces: [
-                      _RoleData(
-                        icon: Icons.public,
-                        title: l.publicWebsite,
-                        sub: l.publicWebsiteSub,
-                        color: const Color(0xFF7D5A3C),
-                        onTap: () {
-                          app.setSpace(AppSpace.website);
-                          context.go('/website');
-                        },
-                      ),
-                      _RoleData(
-                        icon: Icons.phone_iphone,
-                        title: l.guestApp,
-                        sub: l.guestAppSub,
-                        color: const Color(0xFF2E7D32),
-                        onTap: () {
-                          app.setSpace(AppSpace.guest);
-                          context.go('/guest/activate');
-                        },
-                      ),
-                      _RoleData(
-                        icon: Icons.support_agent,
-                        title: l.reception,
-                        sub: l.receptionSub,
-                        color: const Color(0xFFEF6C00),
-                        onTap: () {
-                          app.setSpace(AppSpace.reception);
-                          context.go('/reception/login');
-                        },
-                      ),
-                      _RoleData(
-                        icon: Icons.admin_panel_settings,
-                        title: l.admin,
-                        sub: l.adminSub,
-                        color: const Color(0xFF6A1B9A),
-                        onTap: () {
-                          app.setSpace(AppSpace.admin);
-                          context.go('/admin/login');
-                        },
-                      ),
-                    ]),
+                    ResponsiveRoleGrid(
+                      spaces: [
+                        _RoleData(
+                          icon: Icons.public,
+                          title: l.publicWebsite,
+                          sub: l.publicWebsiteSub,
+                          color: const Color(0xFF7D5A3C),
+                          onTap: () {
+                            app.setSpace(AppSpace.website);
+                            context.go('/website');
+                          },
+                        ),
+                        _RoleData(
+                          icon: Icons.phone_iphone,
+                          title: l.guestApp,
+                          sub: l.guestAppSub,
+                          color: const Color(0xFF2E7D32),
+                          onTap: () {
+                            app.setSpace(AppSpace.guest);
+                            context.go('/guest/activate');
+                          },
+                        ),
+                        _RoleData(
+                          icon: Icons.support_agent,
+                          title: l.reception,
+                          sub: l.receptionSub,
+                          color: const Color(0xFFEF6C00),
+                          onTap: () {
+                            app.setSpace(AppSpace.reception);
+                            context.go('/reception/login');
+                          },
+                        ),
+                        _RoleData(
+                          icon: Icons.admin_panel_settings,
+                          title: l.admin,
+                          sub: l.adminSub,
+                          color: const Color(0xFF6A1B9A),
+                          onTap: () {
+                            app.setSpace(AppSpace.admin);
+                            context.go('/admin/login');
+                          },
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -134,9 +138,11 @@ class RoleSelectionScreen extends StatelessWidget {
                                   : AppThemeMode.dark,
                             );
                           },
-                          icon: Icon(app.isDark
-                              ? Icons.light_mode_outlined
-                              : Icons.dark_mode_outlined),
+                          icon: Icon(
+                            app.isDark
+                                ? Icons.light_mode_outlined
+                                : Icons.dark_mode_outlined,
+                          ),
                           label: Text(l.switchTheme),
                         ),
                       ],

@@ -33,14 +33,7 @@ class Seed {
       'Airport shuttle',
       'Meeting rooms',
     ],
-    galleryColors: [
-      'amber',
-      'teal',
-      'rose',
-      'sand',
-      'emerald',
-      'plum',
-    ],
+    galleryColors: ['amber', 'teal', 'rose', 'sand', 'emerald', 'plum'],
     checkInTime: '14:00',
     checkOutTime: '12:00',
     policies: [
@@ -66,16 +59,20 @@ class Seed {
       id: 'standard',
       name: 'Standard Twin',
       nameAr: 'غرفة قياسية توأم',
-      description:
-          'A bright, comfortable room with two single beds, perfect for short city stays.',
-      descriptionAr:
-          'غرفة مشرقة ومريحة بسريرين فرديين، مثالية للإقامات القصيرة في المدينة.',
+      description: 'A bright, comfortable room with two single beds, perfect for short city stays.',
+      descriptionAr: 'غرفة مشرقة ومريحة بسريرين فرديين، مثالية للإقامات القصيرة في المدينة.',
       bedConfig: '2 single beds',
       maxOccupancy: 2,
       defaultAdults: 1,
       sizeSqm: 28,
       basePrice: 520,
-      amenities: ['Free Wi-Fi', 'Smart TV', 'Work desk', 'En-suite bathroom', 'Tea & coffee'],
+      amenities: [
+        'Free Wi-Fi',
+        'Smart TV',
+        'Work desk',
+        'En-suite bathroom',
+        'Tea & coffee',
+      ],
       inventoryCount: 8,
       palette: [Color(0xFF6A8CAF), Color(0xFF9CB4D1)],
       icon: Icons.bed_outlined,
@@ -93,7 +90,14 @@ class Seed {
       defaultAdults: 2,
       sizeSqm: 38,
       basePrice: 780,
-      amenities: ['Free Wi-Fi', '55" Smart TV', 'Minibar', 'Sea view', 'Bathrobe', 'Nespresso'],
+      amenities: [
+        'Free Wi-Fi',
+        '55" Smart TV',
+        'Minibar',
+        'Sea view',
+        'Bathrobe',
+        'Nespresso',
+      ],
       inventoryCount: 6,
       palette: [Color(0xFFC9A24B), Color(0xFFE6C878)],
       icon: Icons.king_bed_outlined,
@@ -102,8 +106,7 @@ class Seed {
       id: 'suite',
       name: 'Grand Suite',
       nameAr: 'جناح جراند',
-      description:
-          'An elegant one-bedroom suite with a living room, panoramic sea view, and butler call.',
+      description: 'An elegant one-bedroom suite with a living room, panoramic sea view, and butler call.',
       descriptionAr:
           'جناح أنيق بغرفة نوم وصالة وإطلالة بانورامية على البحر وخدمة المدبر.',
       bedConfig: '1 king bed + sofa bed',
@@ -111,7 +114,15 @@ class Seed {
       defaultAdults: 2,
       sizeSqm: 65,
       basePrice: 1450,
-      amenities: ['Free Wi-Fi', 'Living room', 'Panoramic sea view', 'Minibar', 'Butler call', 'Jacuzzi', 'Espresso'],
+      amenities: [
+        'Free Wi-Fi',
+        'Living room',
+        'Panoramic sea view',
+        'Minibar',
+        'Butler call',
+        'Jacuzzi',
+        'Espresso',
+      ],
       inventoryCount: 4,
       palette: [Color(0xFF7D5A3C), Color(0xFFB5895A)],
       icon: Icons.apartment,
@@ -202,12 +213,7 @@ class Seed {
   ];
 
   static const List<AppUser> users = [
-    AppUser(
-      id: 'u1',
-      name: 'Omar (Admin)',
-      role: 'admin',
-      username: 'admin',
-    ),
+    AppUser(id: 'u1', name: 'Omar (Admin)', role: 'admin', username: 'admin'),
     AppUser(
       id: 'u2',
       name: 'Layla (Reception)',
@@ -221,21 +227,19 @@ class Seed {
   static List<Room> buildRooms(List<RoomType> types) {
     final list = <Room>[];
     for (final t in types) {
-      final startFloor = {
-        'standard': 1,
-        'deluxe': 2,
-        'suite': 3,
-      }[t.id]!;
+      final startFloor = {'standard': 1, 'deluxe': 2, 'suite': 3}[t.id]!;
       for (int i = 0; i < t.inventoryCount; i++) {
         final number = '$startFloor${(i + 1).toString().padLeft(2, '0')}';
-        list.add(Room(
-          id: 'room-${t.id}-$i',
-          number: number,
-          roomTypeId: t.id,
-          floor: startFloor,
-          capacity: t.maxOccupancy,
-          status: RoomStatus.available,
-        ));
+        list.add(
+          Room(
+            id: 'room-${t.id}-$i',
+            number: number,
+            roomTypeId: t.id,
+            floor: startFloor,
+            capacity: t.maxOccupancy,
+            status: RoomStatus.available,
+          ),
+        );
       }
     }
     return list;

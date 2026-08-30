@@ -109,7 +109,9 @@ class _GuestShellState extends State<GuestShell> {
                   onChat: () => context.push('/guest/chat'),
                   onBill: () => context.push('/guest/bill'),
                 ),
-                Expanded(child: IndexedStack(index: _index, children: _pages)),
+                Expanded(
+                  child: IndexedStack(index: _index, children: _pages),
+                ),
               ],
             )
           : IndexedStack(index: _index, children: _pages),
@@ -125,17 +127,20 @@ class _GuestShellState extends State<GuestShell> {
               onDestinationSelected: (i) => setState(() => _index = i),
               destinations: [
                 NavigationDestination(
-                    icon: const Icon(Icons.bed_outlined),
-                    selectedIcon: const Icon(Icons.bed),
-                    label: l.myStay),
+                  icon: const Icon(Icons.bed_outlined),
+                  selectedIcon: const Icon(Icons.bed),
+                  label: l.myStay,
+                ),
                 NavigationDestination(
-                    icon: const Icon(Icons.task_outlined),
-                    selectedIcon: const Icon(Icons.task),
-                    label: l.requests),
+                  icon: const Icon(Icons.task_outlined),
+                  selectedIcon: const Icon(Icons.task),
+                  label: l.requests,
+                ),
                 NavigationDestination(
-                    icon: const Icon(Icons.notifications_outlined),
-                    selectedIcon: const Icon(Icons.notifications),
-                    label: l.notifications),
+                  icon: const Icon(Icons.notifications_outlined),
+                  selectedIcon: const Icon(Icons.notifications),
+                  label: l.notifications,
+                ),
               ],
             ),
     );
@@ -144,7 +149,12 @@ class _GuestShellState extends State<GuestShell> {
 
 class _GuestDrawer extends StatelessWidget {
   final ValueChanged<int> onItem;
-  final VoidCallback onServices, onExtend, onRoomChange, onCheckout, onChat, onBill;
+  final VoidCallback onServices,
+      onExtend,
+      onRoomChange,
+      onCheckout,
+      onChat,
+      onBill;
   const _GuestDrawer({
     required this.onItem,
     required this.onServices,
@@ -161,28 +171,70 @@ class _GuestDrawer extends StatelessWidget {
     return ListView(
       children: [
         DrawerHeader(
-          decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary.withOpacity(0.1)),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Icon(Icons.hotel, color: Theme.of(context).colorScheme.primary, size: 36),
+              Icon(
+                Icons.hotel,
+                color: Theme.of(context).colorScheme.primary,
+                size: 36,
+              ),
               const SizedBox(height: 6),
               Text(l.appName, style: Theme.of(context).textTheme.titleLarge),
               Text(l.guestApp, style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ),
-        ListTile(leading: const Icon(Icons.bed_outlined), title: Text(l.myStay), onTap: () => onItem(0)),
-        ListTile(leading: const Icon(Icons.task_outlined), title: Text(l.requests), onTap: () => onItem(1)),
-        ListTile(leading: const Icon(Icons.add_circle_outline), title: Text(l.requestService), onTap: onServices),
+        ListTile(
+          leading: const Icon(Icons.bed_outlined),
+          title: Text(l.myStay),
+          onTap: () => onItem(0),
+        ),
+        ListTile(
+          leading: const Icon(Icons.task_outlined),
+          title: Text(l.requests),
+          onTap: () => onItem(1),
+        ),
+        ListTile(
+          leading: const Icon(Icons.add_circle_outline),
+          title: Text(l.requestService),
+          onTap: onServices,
+        ),
         const Divider(),
-        ListTile(leading: const Icon(Icons.support_agent), title: Text(l.receptionChat), onTap: onChat),
-        ListTile(leading: const Icon(Icons.receipt_long_outlined), title: Text(l.myBill), onTap: onBill),
-        ListTile(leading: const Icon(Icons.update), title: Text(l.extendStay), onTap: onExtend),
-        ListTile(leading: const Icon(Icons.swap_horiz), title: Text(l.roomChange), onTap: onRoomChange),
-        ListTile(leading: const Icon(Icons.logout), title: Text(l.checkoutRequest), onTap: onCheckout),
-        ListTile(leading: const Icon(Icons.notifications_outlined), title: Text(l.notifications), onTap: () => onItem(2)),
+        ListTile(
+          leading: const Icon(Icons.support_agent),
+          title: Text(l.receptionChat),
+          onTap: onChat,
+        ),
+        ListTile(
+          leading: const Icon(Icons.receipt_long_outlined),
+          title: Text(l.myBill),
+          onTap: onBill,
+        ),
+        ListTile(
+          leading: const Icon(Icons.update),
+          title: Text(l.extendStay),
+          onTap: onExtend,
+        ),
+        ListTile(
+          leading: const Icon(Icons.swap_horiz),
+          title: Text(l.roomChange),
+          onTap: onRoomChange,
+        ),
+        ListTile(
+          leading: const Icon(Icons.logout),
+          title: Text(l.checkoutRequest),
+          onTap: onCheckout,
+        ),
+        ListTile(
+          leading: const Icon(Icons.notifications_outlined),
+          title: Text(l.notifications),
+          onTap: () => onItem(2),
+        ),
       ],
     );
   }
@@ -191,7 +243,12 @@ class _GuestDrawer extends StatelessWidget {
 class _GuestNavRail extends StatelessWidget {
   final int index;
   final ValueChanged<int> onItem;
-  final VoidCallback onServices, onExtend, onRoomChange, onCheckout, onChat, onBill;
+  final VoidCallback onServices,
+      onExtend,
+      onRoomChange,
+      onCheckout,
+      onChat,
+      onBill;
   const _GuestNavRail({
     required this.index,
     required this.onItem,
@@ -218,7 +275,13 @@ class _GuestNavRail extends StatelessWidget {
               children: [
                 Icon(Icons.hotel, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
-                Expanded(child: Text(l.appName, style: Theme.of(context).textTheme.titleMedium, overflow: TextOverflow.ellipsis)),
+                Expanded(
+                  child: Text(
+                    l.appName,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
           ),
@@ -229,14 +292,44 @@ class _GuestNavRail extends StatelessWidget {
               children: [
                 _railItem(context, 0, Icons.bed_outlined, l.myStay),
                 _railItem(context, 1, Icons.task_outlined, l.requests),
-                _railAction(context, Icons.add_circle_outline, l.requestService, onServices),
+                _railAction(
+                  context,
+                  Icons.add_circle_outline,
+                  l.requestService,
+                  onServices,
+                ),
                 const Divider(),
-                _railAction(context, Icons.support_agent, l.receptionChat, onChat),
-                _railAction(context, Icons.receipt_long_outlined, l.myBill, onBill),
+                _railAction(
+                  context,
+                  Icons.support_agent,
+                  l.receptionChat,
+                  onChat,
+                ),
+                _railAction(
+                  context,
+                  Icons.receipt_long_outlined,
+                  l.myBill,
+                  onBill,
+                ),
                 _railAction(context, Icons.update, l.extendStay, onExtend),
-                _railAction(context, Icons.swap_horiz, l.roomChange, onRoomChange),
-                _railAction(context, Icons.logout, l.checkoutRequest, onCheckout),
-                _railItem(context, 2, Icons.notifications_outlined, l.notifications),
+                _railAction(
+                  context,
+                  Icons.swap_horiz,
+                  l.roomChange,
+                  onRoomChange,
+                ),
+                _railAction(
+                  context,
+                  Icons.logout,
+                  l.checkoutRequest,
+                  onCheckout,
+                ),
+                _railItem(
+                  context,
+                  2,
+                  Icons.notifications_outlined,
+                  l.notifications,
+                ),
               ],
             ),
           ),
@@ -251,14 +344,21 @@ class _GuestNavRail extends StatelessWidget {
     return ListTile(
       selected: sel,
       selectedTileColor: theme.colorScheme.primary.withOpacity(0.12),
-      leading: Icon(icon,
-          color: sel ? theme.colorScheme.primary : null),
-      title: Text(label, style: TextStyle(fontWeight: sel ? FontWeight.w700 : FontWeight.w500)),
+      leading: Icon(icon, color: sel ? theme.colorScheme.primary : null),
+      title: Text(
+        label,
+        style: TextStyle(fontWeight: sel ? FontWeight.w700 : FontWeight.w500),
+      ),
       onTap: () => onItem(i),
     );
   }
 
-  Widget _railAction(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+  Widget _railAction(
+    BuildContext context,
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+  ) {
     final theme = Theme.of(context);
     return ListTile(
       leading: Icon(icon, color: theme.colorScheme.primary.withOpacity(0.85)),
@@ -285,7 +385,10 @@ class _StayPage extends StatelessWidget {
     final type = store.roomTypeById(room.roomTypeId)!;
     final guest = store.guestById(stay.guestId)!;
     final nights = Fmt.nights(stay.checkIn, stay.checkOut);
-    final access = store.firstWhereOrNull(store.accesses, (a) => a.stayId == stay.id);
+    final access = store.firstWhereOrNull(
+      store.accesses,
+      (a) => a.stayId == stay.id,
+    );
     final balance = store.outstandingBalance(stay.id);
     final reqs = store.requestsForStay(stay.id);
 
@@ -302,7 +405,11 @@ class _StayPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  RoomImage(palette: type.palette, icon: type.icon, height: 150),
+                  RoomImage(
+                    palette: type.palette,
+                    icon: type.icon,
+                    height: 150,
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(18),
                     child: Column(
@@ -322,10 +429,14 @@ class _StayPage extends StatelessWidget {
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            StatusChip(label: stay.status.label, color: stay.status.color),
+                            StatusChip(
+                              label: stay.status.label,
+                              color: stay.status.color,
+                            ),
                             const SizedBox(width: 8),
                             StatusChip(
-                              label: '${Fmt.dateShort(stay.checkIn)} → ${Fmt.dateShort(stay.checkOut)}',
+                              label:
+                                  '${Fmt.dateShort(stay.checkIn)} → ${Fmt.dateShort(stay.checkOut)}',
                               color: theme.colorScheme.primary,
                               icon: Icons.calendar_today_outlined,
                             ),
@@ -358,7 +469,10 @@ class _StayPage extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(l.accessCodeReady, style: theme.textTheme.titleSmall),
+                            Text(
+                              l.accessCodeReady,
+                              style: theme.textTheme.titleSmall,
+                            ),
                             Text(
                               access.code,
                               style: theme.textTheme.headlineMedium?.copyWith(
@@ -383,12 +497,36 @@ class _StayPage extends StatelessWidget {
               mainAxisSpacing: 12,
               childAspectRatio: 1.05,
               children: [
-                _QuickAction(icon: Icons.room_service_outlined, label: l.requestService, onTap: () => context.push('/guest/services')),
-                _QuickAction(icon: Icons.support_agent, label: l.receptionChat, onTap: () => context.push('/guest/chat')),
-                _QuickAction(icon: Icons.receipt_long_outlined, label: l.myBill, onTap: () => context.push('/guest/bill')),
-                _QuickAction(icon: Icons.update, label: l.extendStay, onTap: () => context.push('/guest/extend')),
-                _QuickAction(icon: Icons.swap_horiz, label: l.roomChange, onTap: () => context.push('/guest/roomchange')),
-                _QuickAction(icon: Icons.logout, label: l.checkoutRequest, onTap: () => context.push('/guest/checkout')),
+                _QuickAction(
+                  icon: Icons.room_service_outlined,
+                  label: l.requestService,
+                  onTap: () => context.push('/guest/services'),
+                ),
+                _QuickAction(
+                  icon: Icons.support_agent,
+                  label: l.receptionChat,
+                  onTap: () => context.push('/guest/chat'),
+                ),
+                _QuickAction(
+                  icon: Icons.receipt_long_outlined,
+                  label: l.myBill,
+                  onTap: () => context.push('/guest/bill'),
+                ),
+                _QuickAction(
+                  icon: Icons.update,
+                  label: l.extendStay,
+                  onTap: () => context.push('/guest/extend'),
+                ),
+                _QuickAction(
+                  icon: Icons.swap_horiz,
+                  label: l.roomChange,
+                  onTap: () => context.push('/guest/roomchange'),
+                ),
+                _QuickAction(
+                  icon: Icons.logout,
+                  label: l.checkoutRequest,
+                  onTap: () => context.push('/guest/checkout'),
+                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -396,27 +534,46 @@ class _StayPage extends StatelessWidget {
               children: [
                 Text(l.requests, style: theme.textTheme.titleLarge),
                 const Spacer(),
-                Text('${reqs.length}', style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurface.withOpacity(0.6))),
+                Text(
+                  '${reqs.length}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 8),
             if (reqs.isEmpty)
               EmptyState(icon: Icons.task_outlined, message: l.noRequestsYet)
             else
-              ...reqs.take(3).map((r) => _RequestTile(r: r, onTap: () => context.push('/guest/request/${r.id}'))),
+              ...reqs
+                  .take(3)
+                  .map(
+                    (r) => _RequestTile(
+                      r: r,
+                      onTap: () => context.push('/guest/request/${r.id}'),
+                    ),
+                  ),
             const SizedBox(height: 16),
             SectionCard(
               title: l.outstandingBalance,
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(Fmt.money(balance),
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          color: balance > 0 ? const Color(0xFFEF6C00) : const Color(0xFF2E7D32),
-                          fontWeight: FontWeight.w800,
-                        )),
+                    child: Text(
+                      Fmt.money(balance),
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        color: balance > 0
+                            ? const Color(0xFFEF6C00)
+                            : const Color(0xFF2E7D32),
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
-                  TextButton(onPressed: () => context.push('/guest/bill'), child: Text(l.myBill)),
+                  TextButton(
+                    onPressed: () => context.push('/guest/bill'),
+                    child: Text(l.myBill),
+                  ),
                 ],
               ),
             ),
@@ -431,7 +588,11 @@ class _QuickAction extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _QuickAction({required this.icon, required this.label, required this.onTap});
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -447,7 +608,11 @@ class _QuickAction extends StatelessWidget {
             children: [
               Icon(icon, color: theme.colorScheme.primary, size: 28),
               const SizedBox(height: 8),
-              Text(label, textAlign: TextAlign.center, style: theme.textTheme.labelLarge),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelLarge,
+              ),
             ],
           ),
         ),
@@ -507,7 +672,10 @@ class _RequestsPage extends StatelessWidget {
               separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (c, i) {
                 final r = reqs[i];
-                return _RequestTile(r: r, onTap: () => context.push('/guest/request/${r.id}'));
+                return _RequestTile(
+                  r: r,
+                  onTap: () => context.push('/guest/request/${r.id}'),
+                );
               },
             ),
     );
@@ -529,7 +697,10 @@ class _GuestNotificationsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.notifications)),
       body: notifs.isEmpty
-          ? EmptyState(icon: Icons.notifications_outlined, message: l.isArabic ? 'لا إشعارات' : 'No notifications')
+          ? EmptyState(
+              icon: Icons.notifications_outlined,
+              message: l.isArabic ? 'لا إشعارات' : 'No notifications',
+            )
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: notifs.length,
@@ -538,8 +709,10 @@ class _GuestNotificationsPage extends StatelessWidget {
                 final n = notifs[i];
                 return Card(
                   child: ListTile(
-                    leading: Icon(Icons.notifications_active_outlined,
-                        color: Theme.of(context).colorScheme.primary),
+                    leading: Icon(
+                      Icons.notifications_active_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     title: Text(n.title),
                     subtitle: Text('${n.body}\n${Fmt.dateTime(n.at)}'),
                     isThreeLine: true,

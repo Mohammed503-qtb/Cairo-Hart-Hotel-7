@@ -71,7 +71,8 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     return FilterChip(
                       label: Text(label),
                       selected: sel,
-                      onSelected: (_) => setState(() => _filter = sel ? null : c),
+                      onSelected: (_) =>
+                          setState(() => _filter = sel ? null : c),
                       avatar: c == null ? null : Icon(c.icon, size: 16),
                     );
                   }).toList(),
@@ -84,11 +85,15 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 crossAxisCount: MediaQuery.sizeOf(context).width >= 700 ? 3 : 1,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
-                childAspectRatio: MediaQuery.sizeOf(context).width >= 700 ? 2.6 : 2.4,
+                childAspectRatio: MediaQuery.sizeOf(context).width >= 700
+                    ? 2.6
+                    : 2.4,
                 children: services.map((s) {
                   final sel = _selected?.id == s.id;
                   return Card(
-                    color: sel ? theme.colorScheme.primary.withOpacity(0.08) : null,
+                    color: sel
+                        ? theme.colorScheme.primary.withOpacity(0.08)
+                        : null,
                     child: InkWell(
                       onTap: () => setState(() => _selected = s),
                       borderRadius: BorderRadius.circular(14),
@@ -96,26 +101,37 @@ class _ServicesScreenState extends State<ServicesScreen> {
                         padding: const EdgeInsets.all(12),
                         child: Row(
                           children: [
-                            Icon(s.category.icon, color: theme.colorScheme.primary),
+                            Icon(
+                              s.category.icon,
+                              color: theme.colorScheme.primary,
+                            ),
                             const SizedBox(width: 10),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(l.isArabic ? s.nameAr : s.name,
-                                      style: theme.textTheme.titleSmall),
                                   Text(
-                                    l.isArabic ? s.category.labelAr : s.category.label,
+                                    l.isArabic ? s.nameAr : s.name,
+                                    style: theme.textTheme.titleSmall,
+                                  ),
+                                  Text(
+                                    l.isArabic
+                                        ? s.category.labelAr
+                                        : s.category.label,
                                     style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                      color: theme.colorScheme.onSurface
+                                          .withOpacity(0.6),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                             if (sel)
-                              Icon(Icons.check_circle, color: theme.colorScheme.primary),
+                              Icon(
+                                Icons.check_circle,
+                                color: theme.colorScheme.primary,
+                              ),
                           ],
                         ),
                       ),
@@ -141,7 +157,10 @@ class _ServicesScreenState extends State<ServicesScreen> {
                 value: _urgent,
                 onChanged: (v) => setState(() => _urgent = v),
                 title: Text(l.urgent),
-                secondary: Icon(Icons.priority_high, color: _urgent ? const Color(0xFFC62828) : null),
+                secondary: Icon(
+                  Icons.priority_high,
+                  color: _urgent ? const Color(0xFFC62828) : null,
+                ),
               ),
               const SizedBox(height: 12),
               SizedBox(
@@ -164,7 +183,13 @@ class _ServicesScreenState extends State<ServicesScreen> {
     final l = L10n.of(context);
     if (_selected == null && _descCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.isArabic ? 'اختر خدمة أو اكتب وصفاً' : 'Pick a service or write a description')),
+        SnackBar(
+          content: Text(
+            l.isArabic
+                ? 'اختر خدمة أو اكتب وصفاً'
+                : 'Pick a service or write a description',
+          ),
+        ),
       );
       return;
     }
@@ -178,11 +203,15 @@ class _ServicesScreenState extends State<ServicesScreen> {
       serviceId: _selected?.id,
       category: category,
       title: title,
-      description: _descCtrl.text.trim().isEmpty ? title : _descCtrl.text.trim(),
+      description: _descCtrl.text.trim().isEmpty
+          ? title
+          : _descCtrl.text.trim(),
       priority: _urgent ? RequestPriority.urgent : RequestPriority.normal,
     );
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.isArabic ? 'تم إرسال الطلب ✓' : 'Request sent ✓')),
+      SnackBar(
+        content: Text(l.isArabic ? 'تم إرسال الطلب ✓' : 'Request sent ✓'),
+      ),
     );
     context.pop();
   }

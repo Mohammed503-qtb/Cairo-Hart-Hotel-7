@@ -70,8 +70,11 @@ class _ActivationScreenState extends State<ActivationScreen> {
                       color: theme.colorScheme.primary.withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.lock_open_outlined,
-                        size: 44, color: theme.colorScheme.primary),
+                    child: Icon(
+                      Icons.lock_open_outlined,
+                      size: 44,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(height: 18),
                   Text(l.enterAccessCode, style: theme.textTheme.headlineSmall),
@@ -106,8 +109,10 @@ class _ActivationScreenState extends State<ActivationScreen> {
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 10),
-                    Text(_error!,
-                        style: TextStyle(color: theme.colorScheme.error)),
+                    Text(
+                      _error!,
+                      style: TextStyle(color: theme.colorScheme.error),
+                    ),
                   ],
                   const SizedBox(height: 16),
                   SizedBox(
@@ -134,8 +139,10 @@ class _ActivationScreenState extends State<ActivationScreen> {
                       padding: const EdgeInsets.all(14),
                       child: Row(
                         children: [
-                          Icon(Icons.info_outline,
-                              color: theme.colorScheme.primary),
+                          Icon(
+                            Icons.info_outline,
+                            color: theme.colorScheme.primary,
+                          ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -144,9 +151,12 @@ class _ActivationScreenState extends State<ActivationScreen> {
                             ),
                           ),
                           IconButton(
-                            tooltip: l.isArabic ? 'استخدام رمز تجريبي' : 'Use demo code',
+                            tooltip: l.isArabic
+                                ? 'استخدام رمز تجريبي'
+                                : 'Use demo code',
                             icon: const Icon(Icons.auto_awesome),
-                            onPressed: () => setState(() => _codeCtrl.text = '204204'),
+                            onPressed: () =>
+                                setState(() => _codeCtrl.text = '204204'),
                           ),
                         ],
                       ),

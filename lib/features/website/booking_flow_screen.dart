@@ -45,7 +45,9 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   void initState() {
     super.initState();
     final n = DateTime.now();
-    _checkIn = widget.initialCheckIn ?? DateTime(n.year, n.month, n.day).add(const Duration(days: 1));
+    _checkIn =
+        widget.initialCheckIn ??
+        DateTime(n.year, n.month, n.day).add(const Duration(days: 1));
     _checkOut = widget.initialCheckOut ?? _checkIn.add(const Duration(days: 3));
     _adults = widget.adults;
     _roomTypeId = widget.roomTypeId;
@@ -91,7 +93,9 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                 OutlinedButton(onPressed: _prevReal, child: Text(l.back))
               else
                 OutlinedButton(
-                    onPressed: () => context.pop(), child: Text(l.cancel)),
+                  onPressed: () => context.pop(),
+                  child: Text(l.cancel),
+                ),
               const Spacer(),
               FilledButton(
                 onPressed: _onNext,
@@ -108,7 +112,11 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     final l = L10n.of(context);
     if (_step == 0) {
       if (!_checkOut.isAfter(_checkIn)) {
-        _toast(l.isArabic ? 'تاريخ المغادرة يجب أن يكون بعد الوصول' : 'Check-out must be after check-in');
+        _toast(
+          l.isArabic
+              ? 'تاريخ المغادرة يجب أن يكون بعد الوصول'
+              : 'Check-out must be after check-in',
+        );
         return;
       }
       _next();
@@ -118,9 +126,17 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
         return;
       }
       final store = context.read<HotelStore>();
-      final avail = store.availableCountForType(_roomTypeId!, _checkIn, _checkOut);
+      final avail = store.availableCountForType(
+        _roomTypeId!,
+        _checkIn,
+        _checkOut,
+      );
       if (avail <= 0) {
-        _toast(l.isArabic ? 'لا توجد غرف متاحة لهذه الفترة' : 'No rooms available for these dates');
+        _toast(
+          l.isArabic
+              ? 'لا توجد غرف متاحة لهذه الفترة'
+              : 'No rooms available for these dates',
+        );
         return;
       }
       _next();
@@ -128,7 +144,11 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
       if (_nameCtrl.text.trim().isEmpty ||
           _emailCtrl.text.trim().isEmpty ||
           _phoneCtrl.text.trim().isEmpty) {
-        _toast(l.isArabic ? 'يرجى إكمال بيانات النزيل' : 'Please complete guest details');
+        _toast(
+          l.isArabic
+              ? 'يرجى إكمال بيانات النزيل'
+              : 'Please complete guest details',
+        );
         return;
       }
       _next();
@@ -255,7 +275,11 @@ class _DatesStep extends StatelessWidget {
             const SizedBox(height: 8),
             _DateTile(label: l.checkInDate, value: checkIn, onPick: onCheckIn),
             const SizedBox(height: 10),
-            _DateTile(label: l.checkOutDate, value: checkOut, onPick: onCheckOut),
+            _DateTile(
+              label: l.checkOutDate,
+              value: checkOut,
+              onPick: onCheckOut,
+            ),
             const SizedBox(height: 6),
             Text(
               '${Fmt.nights(checkIn, checkOut)} ${Fmt.nights(checkIn, checkOut) == 1 ? l.night : l.nights}',
@@ -265,9 +289,21 @@ class _DatesStep extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            _Stepper(label: l.adults, value: adults, min: 1, max: 6, onChanged: onAdults),
+            _Stepper(
+              label: l.adults,
+              value: adults,
+              min: 1,
+              max: 6,
+              onChanged: onAdults,
+            ),
             const SizedBox(height: 12),
-            _Stepper(label: l.children, value: children, min: 0, max: 4, onChanged: onChildren),
+            _Stepper(
+              label: l.children,
+              value: children,
+              min: 0,
+              max: 4,
+              onChanged: onChildren,
+            ),
           ],
         ),
       ),
@@ -279,7 +315,11 @@ class _DateTile extends StatelessWidget {
   final String label;
   final DateTime value;
   final ValueChanged<DateTime> onPick;
-  const _DateTile({required this.label, required this.value, required this.onPick});
+  const _DateTile({
+    required this.label,
+    required this.value,
+    required this.onPick,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -305,15 +345,20 @@ class _DateTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(Icons.calendar_today_outlined,
-                color: Theme.of(context).colorScheme.primary),
+            Icon(
+              Icons.calendar_today_outlined,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(label, style: Theme.of(context).textTheme.labelSmall),
-                  Text(Fmt.date(value), style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    Fmt.date(value),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ],
               ),
             ),
@@ -342,7 +387,9 @@ class _Stepper extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Text(label, style: Theme.of(context).textTheme.titleMedium)),
+        Expanded(
+          child: Text(label, style: Theme.of(context).textTheme.titleMedium),
+        ),
         IconButton(
           onPressed: value > min ? () => onChanged(value - 1) : null,
           icon: const Icon(Icons.remove_circle_outline),
@@ -389,7 +436,11 @@ class _RoomTypeStep extends StatelessWidget {
             _StepHeader(no: 2, title: l.selectRoomType),
             const SizedBox(height: 14),
             ...store.roomTypes.map((t) {
-              final avail = store.availableCountForType(t.id, checkIn, checkOut);
+              final avail = store.availableCountForType(
+                t.id,
+                checkIn,
+                checkOut,
+              );
               final price = store.calculatePrice(t, checkIn, checkOut, adults);
               final selected = this.selected == t.id;
               return Card(
@@ -401,23 +452,32 @@ class _RoomTypeStep extends StatelessWidget {
                     child: SizedBox(
                       width: 72,
                       height: 72,
-                      child: RoomImage(palette: t.palette, icon: t.icon, height: 72),
+                      child: RoomImage(
+                        palette: t.palette,
+                        icon: t.icon,
+                        height: 72,
+                      ),
                     ),
                   ),
-                  title: Text(l.isArabic ? t.nameAr : t.name,
-                      style: theme.textTheme.titleMedium),
+                  title: Text(
+                    l.isArabic ? t.nameAr : t.name,
+                    style: theme.textTheme.titleMedium,
+                  ),
                   subtitle: Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('${t.bedConfig} • ${t.maxOccupancy} ${l.isArabic ? "نزيل" : "guests"}'),
+                        Text(
+                          '${t.bedConfig} • ${t.maxOccupancy} ${l.isArabic ? "نزيل" : "guests"}',
+                        ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
                             if (avail > 0)
                               StatusChip(
-                                label: '$avail ${l.isArabic ? "متاح" : "available"}',
+                                label:
+                                    '$avail ${l.isArabic ? "متاح" : "available"}',
                                 color: const Color(0xFF2E7D32),
                               )
                             else
@@ -439,8 +499,11 @@ class _RoomTypeStep extends StatelessWidget {
                     ),
                   ),
                   trailing: selected
-                      ? Icon(Icons.check_circle,
-                          color: theme.colorScheme.primary, size: 30)
+                      ? Icon(
+                          Icons.check_circle,
+                          color: theme.colorScheme.primary,
+                          size: 30,
+                        )
                       : const Icon(Icons.radio_button_unchecked),
                 ),
               );
@@ -459,7 +522,11 @@ class _GuestStep extends StatelessWidget {
   final TextEditingController name;
   final TextEditingController email;
   final TextEditingController phone;
-  const _GuestStep({required this.name, required this.email, required this.phone});
+  const _GuestStep({
+    required this.name,
+    required this.email,
+    required this.phone,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -475,19 +542,28 @@ class _GuestStep extends StatelessWidget {
             const SizedBox(height: 14),
             TextField(
               controller: name,
-              decoration: InputDecoration(labelText: l.fullName, prefixIcon: const Icon(Icons.person_outline)),
+              decoration: InputDecoration(
+                labelText: l.fullName,
+                prefixIcon: const Icon(Icons.person_outline),
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: email,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(labelText: l.email, prefixIcon: const Icon(Icons.mail_outline)),
+              decoration: InputDecoration(
+                labelText: l.email,
+                prefixIcon: const Icon(Icons.mail_outline),
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: phone,
               keyboardType: TextInputType.phone,
-              decoration: InputDecoration(labelText: l.phone, prefixIcon: const Icon(Icons.phone)),
+              decoration: InputDecoration(
+                labelText: l.phone,
+                prefixIcon: const Icon(Icons.phone),
+              ),
             ),
           ],
         ),
@@ -519,21 +595,27 @@ class _PaymentStep extends StatelessWidget {
             _MethodTile(
               icon: Icons.receipt_long_outlined,
               title: l.payAtHotel,
-              subtitle: l.isArabic ? 'ادفع عند الوصول للفندق' : 'Pay at the hotel on arrival',
+              subtitle: l.isArabic
+                  ? 'ادفع عند الوصول للفندق'
+                  : 'Pay at the hotel on arrival',
               selected: method == PaymentMethod.payAtHotel,
               onTap: () => onMethod(PaymentMethod.payAtHotel),
             ),
             _MethodTile(
               icon: Icons.credit_card,
               title: l.isArabic ? 'بطاقة ائتمان' : 'Credit card',
-              subtitle: l.isArabic ? 'تُحجز مباشرةً (محاكاة)' : 'Charged immediately (simulated)',
+              subtitle: l.isArabic
+                  ? 'تُحجز مباشرةً (محاكاة)'
+                  : 'Charged immediately (simulated)',
               selected: method == PaymentMethod.creditCard,
               onTap: () => onMethod(PaymentMethod.creditCard),
             ),
             _MethodTile(
               icon: Icons.payments_outlined,
               title: l.isArabic ? 'نقداً' : 'Cash',
-              subtitle: l.isArabic ? 'ادفع نقداً عند الوصول' : 'Pay cash on arrival',
+              subtitle: l.isArabic
+                  ? 'ادفع نقداً عند الوصول'
+                  : 'Pay cash on arrival',
               selected: method == PaymentMethod.cash,
               onTap: () => onMethod(PaymentMethod.cash),
             ),
@@ -622,17 +704,35 @@ class _ReviewStep extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _StepHeader(no: 5, title: l.isArabic ? 'مراجعة وتأكيد' : 'Review & confirm'),
+            _StepHeader(
+              no: 5,
+              title: l.isArabic ? 'مراجعة وتأكيد' : 'Review & confirm',
+            ),
             const SizedBox(height: 14),
             SectionCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _row(context, l.isArabic ? 'الغرفة' : 'Room', l.isArabic ? type.nameAr : type.name),
+                  _row(
+                    context,
+                    l.isArabic ? 'الغرفة' : 'Room',
+                    l.isArabic ? type.nameAr : type.name,
+                  ),
                   _row(context, l.checkInDate, Fmt.date(checkIn)),
                   _row(context, l.checkOutDate, Fmt.date(checkOut)),
-                  _row(context, l.isArabic ? 'المدة' : 'Duration', '$nights ${nights == 1 ? l.night : l.nights}'),
-                  _row(context, l.isArabic ? 'النزلاء' : 'Guests', '$adults ${l.adults.toLowerCase()}' + (children > 0 ? ' + $children ${l.children.toLowerCase()}' : '')),
+                  _row(
+                    context,
+                    l.isArabic ? 'المدة' : 'Duration',
+                    '$nights ${nights == 1 ? l.night : l.nights}',
+                  ),
+                  _row(
+                    context,
+                    l.isArabic ? 'النزلاء' : 'Guests',
+                    '$adults ${l.adults.toLowerCase()}' +
+                        (children > 0
+                            ? ' + $children ${l.children.toLowerCase()}'
+                            : ''),
+                  ),
                   _row(context, l.isArabic ? 'الاسم' : 'Name', name),
                   _row(context, l.paymentMethod, methodName()),
                   const Divider(height: 24),
@@ -655,14 +755,19 @@ class _ReviewStep extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(k, style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.65),
-            )),
+            child: Text(
+              k,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.65),
+              ),
+            ),
           ),
           Text(
             v,
             style: bold
-                ? theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)
+                ? theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  )
                 : theme.textTheme.titleSmall,
           ),
         ],

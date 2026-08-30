@@ -33,14 +33,22 @@ class _ReceptionChatScreenState extends State<ReceptionChatScreen> {
     final store = context.watch<HotelStore>();
     final stay = store.currentStayForGuest(app.guestId!)!;
     final existing = store.conversationForStay(stay.id);
-    final conv = existing ??
-        Conversation(id: 'CV${store.conversations.length + 1}', stayId: stay.id, guestId: stay.guestId);
+    final conv =
+        existing ??
+        Conversation(
+          id: 'CV${store.conversations.length + 1}',
+          stayId: stay.id,
+          guestId: stay.guestId,
+        );
     if (existing == null) {
       store.conversations.add(conv);
     }
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Row(
           children: [
             CircleAvatar(
@@ -51,8 +59,15 @@ class _ReceptionChatScreenState extends State<ReceptionChatScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l.receptionChat, style: Theme.of(context).textTheme.titleMedium),
-                Text(l.isArabic ? 'متصل' : 'Online', style: Theme.of(context).textTheme.bodySmall?.copyWith(color: const Color(0xFF2E7D32))),
+                Text(
+                  l.receptionChat,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Text(
+                  l.isArabic ? 'متصل' : 'Online',
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: const Color(0xFF2E7D32)),
+                ),
               ],
             ),
           ],
@@ -62,7 +77,12 @@ class _ReceptionChatScreenState extends State<ReceptionChatScreen> {
         children: [
           Expanded(
             child: conv.messages.isEmpty
-                ? EmptyState(icon: Icons.chat_bubble_outline, message: l.isArabic ? 'ابدأ المحادثة' : 'Start the conversation')
+                ? EmptyState(
+                    icon: Icons.chat_bubble_outline,
+                    message: l.isArabic
+                        ? 'ابدأ المحادثة'
+                        : 'Start the conversation',
+                  )
                 : ListView.builder(
                     padding: const EdgeInsets.all(12),
                     itemCount: conv.messages.length,
@@ -70,13 +90,23 @@ class _ReceptionChatScreenState extends State<ReceptionChatScreen> {
                       final m = conv.messages[i];
                       final mine = !m.fromStaff;
                       return Align(
-                        alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: mine
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Container(
                           margin: const EdgeInsets.symmetric(vertical: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                          constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.72),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 9,
+                          ),
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.sizeOf(context).width * 0.72,
+                          ),
                           decoration: BoxDecoration(
-                            color: mine ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface.withOpacity(0.08),
+                            color: mine
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.onSurface
+                                      .withOpacity(0.08),
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(12),
                               topRight: const Radius.circular(12),
@@ -87,9 +117,25 @@ class _ReceptionChatScreenState extends State<ReceptionChatScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(m.text, style: TextStyle(color: mine ? Colors.white : Theme.of(context).colorScheme.onSurface)),
+                              Text(
+                                m.text,
+                                style: TextStyle(
+                                  color: mine
+                                      ? Colors.white
+                                      : Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
                               const SizedBox(height: 2),
-                              Text(Fmt.time(m.at), style: TextStyle(fontSize: 10, color: mine ? Colors.white70 : Theme.of(context).colorScheme.onSurface.withOpacity(0.5))),
+                              Text(
+                                Fmt.time(m.at),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: mine
+                                      ? Colors.white70
+                                      : Theme.of(context).colorScheme.onSurface
+                                            .withOpacity(0.5),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -105,7 +151,11 @@ class _ReceptionChatScreenState extends State<ReceptionChatScreen> {
                   Expanded(
                     child: TextField(
                       controller: _ctrl,
-                      decoration: InputDecoration(hintText: l.isArabic ? 'اكتب رسالة...' : 'Type a message...'),
+                      decoration: InputDecoration(
+                        hintText: l.isArabic
+                            ? 'اكتب رسالة...'
+                            : 'Type a message...',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -148,7 +198,9 @@ class _ReceptionChatScreenState extends State<ReceptionChatScreen> {
           id: 'cm${DateTime.now().millisecondsSinceEpoch + 1}',
           authorId: 'u2',
           fromStaff: true,
-          text: l.isArabic ? 'بالتأكيد، سأساعدك في ذلك.' : 'Of course, I will help you with that.',
+          text: l.isArabic
+              ? 'بالتأكيد، سأساعدك في ذلك.'
+              : 'Of course, I will help you with that.',
           at: DateTime.now(),
         ),
       );

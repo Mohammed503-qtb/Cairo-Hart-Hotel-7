@@ -19,7 +19,10 @@ class RoomsAdminScreen extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text(l.allRooms),
       ),
       body: SingleChildScrollView(
@@ -31,26 +34,53 @@ class RoomsAdminScreen extends StatelessWidget {
             children: [
               Wrap(
                 spacing: 8,
-                children: RoomStatus.values.map((s) => StatusChip(label: s.label, color: s.color)).toList(),
+                children: RoomStatus.values
+                    .map((s) => StatusChip(label: s.label, color: s.color))
+                    .toList(),
               ),
               const SizedBox(height: 16),
               ...store.rooms.map((r) {
                 final t = store.roomTypeById(r.roomTypeId)!;
-                final stay = r.currentStayId == null ? null : store.stayById(r.currentStayId!);
+                final stay = r.currentStayId == null
+                    ? null
+                    : store.stayById(r.currentStayId!);
                 return Card(
                   child: ListTile(
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: SizedBox(width: 50, height: 50, child: RoomImage(palette: t.palette, icon: t.icon, height: 50)),
+                      child: SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: RoomImage(
+                          palette: t.palette,
+                          icon: t.icon,
+                          height: 50,
+                        ),
+                      ),
                     ),
-                    title: Text('${r.number} • ${l.isArabic ? t.nameAr : t.name}'),
-                    subtitle: Text('${l.floor} ${r.floor} • ${r.status.label}${stay != null ? " • ${store.guestById(stay.guestId)?.name ?? ""}" : ""}'),
+                    title: Text(
+                      '${r.number} • ${l.isArabic ? t.nameAr : t.name}',
+                    ),
+                    subtitle: Text(
+                      '${l.floor} ${r.floor} • ${r.status.label}${stay != null ? " • ${store.guestById(stay.guestId)?.name ?? ""}" : ""}',
+                    ),
                     trailing: Wrap(
                       spacing: 6,
                       children: [
-                        StatusChip(label: r.status.label, color: r.status.color),
+                        StatusChip(
+                          label: r.status.label,
+                          color: r.status.color,
+                        ),
                         ActionChip(
-                          label: Text(r.active ? l.isArabic ? 'تعطيل' : 'Disable' : l.isArabic ? 'تفعيل' : 'Enable'),
+                          label: Text(
+                            r.active
+                                ? l.isArabic
+                                      ? 'تعطيل'
+                                      : 'Disable'
+                                : l.isArabic
+                                ? 'تفعيل'
+                                : 'Enable',
+                          ),
                           onPressed: () => store.adminToggleRoomActive(r.id),
                         ),
                       ],

@@ -42,16 +42,25 @@ class _RoomChangeScreenState extends State<RoomChangeScreen> {
       if (r.id == currentRoom.id) return false;
       if (!r.active) return false;
       if (!r.status.isSellable) return false;
-      if (store.firstWhereOrNull(store.stays, (s) =>
-          s.roomId == r.id &&
-          s.id != stay.id &&
-          (s.status == StayStatus.inHouse || s.status == StayStatus.checkedIn)) != null) return false;
+      if (store.firstWhereOrNull(
+            store.stays,
+            (s) =>
+                s.roomId == r.id &&
+                s.id != stay.id &&
+                (s.status == StayStatus.inHouse ||
+                    s.status == StayStatus.checkedIn),
+          ) !=
+          null)
+        return false;
       return true;
     }).toList();
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text(l.roomChange),
       ),
       body: SingleChildScrollView(
@@ -70,9 +79,14 @@ class _RoomChangeScreenState extends State<RoomChangeScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l.isArabic ? 'الغرفة الحالية' : 'Current room', style: theme.textTheme.titleSmall),
-                          Text('${currentRoom.number} • ${l.isArabic ? currentType.nameAr : currentType.name}',
-                              style: theme.textTheme.titleLarge),
+                          Text(
+                            l.isArabic ? 'الغرفة الحالية' : 'Current room',
+                            style: theme.textTheme.titleSmall,
+                          ),
+                          Text(
+                            '${currentRoom.number} • ${l.isArabic ? currentType.nameAr : currentType.name}',
+                            style: theme.textTheme.titleLarge,
+                          ),
                         ],
                       ),
                     ),
@@ -80,25 +94,52 @@ class _RoomChangeScreenState extends State<RoomChangeScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(l.isArabic ? 'اختر غرفة جديدة' : 'Choose a new room', style: theme.textTheme.titleMedium),
+              Text(
+                l.isArabic ? 'اختر غرفة جديدة' : 'Choose a new room',
+                style: theme.textTheme.titleMedium,
+              ),
               const SizedBox(height: 8),
               if (candidates.isEmpty)
-                EmptyState(icon: Icons.bed_outlined, message: l.isArabic ? 'لا توجد غرف متاحة حالياً' : 'No rooms available right now')
+                EmptyState(
+                  icon: Icons.bed_outlined,
+                  message: l.isArabic
+                      ? 'لا توجد غرف متاحة حالياً'
+                      : 'No rooms available right now',
+                )
               else
                 ...candidates.map((r) {
                   final t = store.roomTypeById(r.roomTypeId)!;
                   final sel = _selectedRoomId == r.id;
                   return Card(
-                    color: sel ? theme.colorScheme.primary.withOpacity(0.08) : null,
+                    color: sel
+                        ? theme.colorScheme.primary.withOpacity(0.08)
+                        : null,
                     child: ListTile(
                       onTap: () => setState(() => _selectedRoomId = r.id),
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: SizedBox(width: 56, height: 56, child: RoomImage(palette: t.palette, icon: t.icon, height: 56)),
+                        child: SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: RoomImage(
+                            palette: t.palette,
+                            icon: t.icon,
+                            height: 56,
+                          ),
+                        ),
                       ),
-                      title: Text('${r.number} • ${l.isArabic ? t.nameAr : t.name}'),
-                      subtitle: Text('${l.floor} ${r.floor} • ${Fmt.moneyShort(t.basePrice)} ${l.perNight}'),
-                      trailing: sel ? Icon(Icons.check_circle, color: theme.colorScheme.primary) : const Icon(Icons.radio_button_unchecked),
+                      title: Text(
+                        '${r.number} • ${l.isArabic ? t.nameAr : t.name}',
+                      ),
+                      subtitle: Text(
+                        '${l.floor} ${r.floor} • ${Fmt.moneyShort(t.basePrice)} ${l.perNight}',
+                      ),
+                      trailing: sel
+                          ? Icon(
+                              Icons.check_circle,
+                              color: theme.colorScheme.primary,
+                            )
+                          : const Icon(Icons.radio_button_unchecked),
                     ),
                   );
                 }),
@@ -106,14 +147,21 @@ class _RoomChangeScreenState extends State<RoomChangeScreen> {
               TextField(
                 controller: _reasonCtrl,
                 maxLines: 2,
-                decoration: InputDecoration(labelText: l.reason, hintText: l.isArabic ? 'مثال: مشكلة في التكييف' : 'e.g. AC issue'),
+                decoration: InputDecoration(
+                  labelText: l.reason,
+                  hintText: l.isArabic
+                      ? 'مثال: مشكلة في التكييف'
+                      : 'e.g. AC issue',
+                ),
               ),
               const SizedBox(height: 16),
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: FilledButton.icon(
-                  onPressed: _selectedRoomId == null ? null : () => _submit(stay),
+                  onPressed: _selectedRoomId == null
+                      ? null
+                      : () => _submit(stay),
                   icon: const Icon(Icons.swap_horiz),
                   label: Text(l.sendRequest),
                 ),
@@ -137,7 +185,11 @@ class _RoomChangeScreenState extends State<RoomChangeScreen> {
       reason: reason,
       actor: 'guest',
     );
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l.isArabic ? 'تم تغيير الغرفة ✓' : 'Room changed ✓')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l.isArabic ? 'تم تغيير الغرفة ✓' : 'Room changed ✓'),
+      ),
+    );
     context.pop();
   }
 }

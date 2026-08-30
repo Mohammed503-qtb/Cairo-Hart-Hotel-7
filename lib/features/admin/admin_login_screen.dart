@@ -15,7 +15,10 @@ class AdminLoginScreen extends StatelessWidget {
     final app = context.read<AppState>();
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.go('/')),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
         title: Text(l.admin),
       ),
       body: SafeArea(
@@ -33,10 +36,18 @@ class AdminLoginScreen extends StatelessWidget {
                       color: const Color(0xFF6A1B9A).withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.admin_panel_settings, size: 44, color: Color(0xFF6A1B9A)),
+                    child: const Icon(
+                      Icons.admin_panel_settings,
+                      size: 44,
+                      color: Color(0xFF6A1B9A),
+                    ),
                   ),
                   const SizedBox(height: 18),
-                  Text(l.adminSub, textAlign: TextAlign.center, style: theme.textTheme.titleMedium),
+                  Text(
+                    l.adminSub,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.titleMedium,
+                  ),
                   const SizedBox(height: 24),
                   Card(
                     child: InkWell(
@@ -51,15 +62,26 @@ class AdminLoginScreen extends StatelessWidget {
                           children: [
                             const CircleAvatar(
                               backgroundColor: Color(0x1F6A1B9A),
-                              child: Icon(Icons.admin_panel_settings, color: Color(0xFF6A1B9A)),
+                              child: Icon(
+                                Icons.admin_panel_settings,
+                                color: Color(0xFF6A1B9A),
+                              ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Omar — ${l.admin}', style: theme.textTheme.titleMedium),
-                                  Text(l.isArabic ? 'دخول تجريبي' : 'One-tap demo login', style: theme.textTheme.bodySmall),
+                                  Text(
+                                    'Omar — ${l.admin}',
+                                    style: theme.textTheme.titleMedium,
+                                  ),
+                                  Text(
+                                    l.isArabic
+                                        ? 'دخول تجريبي'
+                                        : 'One-tap demo login',
+                                    style: theme.textTheme.bodySmall,
+                                  ),
                                 ],
                               ),
                             ),

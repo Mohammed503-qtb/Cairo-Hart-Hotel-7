@@ -19,11 +19,17 @@ class NotificationsScreen extends StatelessWidget {
     final notifs = store.notificationsForGuest(app.guestId!);
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text(l.notifications),
       ),
       body: notifs.isEmpty
-          ? EmptyState(icon: Icons.notifications_outlined, message: l.isArabic ? 'لا إشعارات' : 'No notifications')
+          ? EmptyState(
+              icon: Icons.notifications_outlined,
+              message: l.isArabic ? 'لا إشعارات' : 'No notifications',
+            )
           : ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: notifs.length,
@@ -32,7 +38,10 @@ class NotificationsScreen extends StatelessWidget {
                 final n = notifs[i];
                 return Card(
                   child: ListTile(
-                    leading: Icon(Icons.notifications_active_outlined, color: Theme.of(context).colorScheme.primary),
+                    leading: Icon(
+                      Icons.notifications_active_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     title: Text(n.title),
                     subtitle: Text('${n.body}\n${Fmt.dateTime(n.at)}'),
                     isThreeLine: true,

@@ -43,8 +43,10 @@ class RoomDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l.isArabic ? type.nameAr : type.name,
-                        style: theme.textTheme.headlineMedium),
+                    Text(
+                      l.isArabic ? type.nameAr : type.name,
+                      style: theme.textTheme.headlineMedium,
+                    ),
                     const SizedBox(height: 6),
                     Text(
                       '${type.bedConfig} • ${type.maxOccupancy} ${l.isArabic ? "نزيل" : "guests"} • ${type.sizeSqm}m²',
@@ -76,25 +78,31 @@ class RoomDetailScreen extends StatelessWidget {
                       title: l.policies,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: (l.isArabic
-                                ? store.hotel.policiesAr
-                                : store.hotel.policies)
-                            .map((p) => Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Icon(Icons.check_circle_outline,
+                        children:
+                            (l.isArabic
+                                    ? store.hotel.policiesAr
+                                    : store.hotel.policies)
+                                .map(
+                                  (p) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Icon(
+                                          Icons.check_circle_outline,
                                           size: 18,
-                                          color: theme.colorScheme.primary),
-                                      const SizedBox(width: 8),
-                                      Expanded(child: Text(p)),
-                                    ],
+                                          color: theme.colorScheme.primary,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(child: Text(p)),
+                                      ],
+                                    ),
                                   ),
-                                ))
-                            .toList(),
+                                )
+                                .toList(),
                       ),
                     ),
                     const SizedBox(height: 18),
@@ -111,17 +119,21 @@ class RoomDetailScreen extends StatelessWidget {
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
-                              Text('${l.perNight}',
-                                  style: theme.textTheme.bodySmall),
+                              Text(
+                                '${l.perNight}',
+                                style: theme.textTheme.bodySmall,
+                              ),
                             ],
                           ),
                         ),
                         FilledButton.icon(
-                          onPressed: () => context.push('/website/booking',
-                              extra: {
-                                'roomTypeId': type.id,
-                                'adults': type.defaultAdults,
-                              }),
+                          onPressed: () => context.push(
+                            '/website/booking',
+                            extra: {
+                              'roomTypeId': type.id,
+                              'adults': type.defaultAdults,
+                            },
+                          ),
                           icon: const Icon(Icons.calendar_month_outlined),
                           label: Text(l.checkAvailability),
                         ),
