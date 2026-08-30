@@ -101,8 +101,7 @@ jobs:
       - name: Compute SHA-256
         run: |
           cd build/app/outputs/flutter-apk && sha256sum *.apk > "$RUNNER_TEMP/apk.sha256"
-          sha256sum "$RUNNER_TEMP"/../../flutter-bundle/*.aab 2>/dev/null || true
-          cd "$RUNNER_TEMP/../flutter-bundle" 2>/dev/null && sha256sum *.aab > "$RUNNER_TEMP/aab.sha256" || true
+          cd build/app/outputs/flutter-bundle && sha256sum *.aab > "$RUNNER_TEMP/aab.sha256" || true
 
       - uses: actions/upload-artifact@v4
         with:
