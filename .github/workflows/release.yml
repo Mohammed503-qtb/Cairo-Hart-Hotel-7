@@ -216,18 +216,18 @@ jobs:
           set -e
           STAGE="$RUNNER_TEMP/release"
           mkdir -p "$STAGE"
-          cp "$RUNNER_TEMP"/artifacts/web-release/web-release.zip "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/web-release/web-release.zip.sha256 "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/android-release/*.apk "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/android-release/*.aab "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/android-release/apk.sha256 "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/android-release/aab.sha256 "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/ios-unsigned/ios-unsigned.zip "$STAGE/" 2>/dev/null || true
-          
-          cp "$RUNNER_TEMP"/artifacts/linux-x64/linux-x64.zip "$STAGE/" 2>/dev/null || true
+          # Recursively find the actual artifact files (download-artifact@v4 may
+          # nest files inside per-artifact subfolders, so direct globs miss them).
+          find "$RUNNER_TEMP/artifacts" -type f \
+            \( -name "*.apk" -o -name "*.aab" \
+               -o -name "*.ipa" -o -name "ios-unsigned.zip" \
+               -o -name "linux-x64.zip" -o -name "web-release.zip" \
+               -o -name "web-release.zip.sha256" \
+               -o -name "apk.sha256" -o -name "aab.sha256" -o -name "ipa.sha256" \) \
+            -exec cp {} "$STAGE/" \;
           cd "$STAGE" && sha256sum * > checksums-all.sha256 2>/dev/null || true
+          echo "=== Staged release assets ==="
           ls -la "$STAGE"
-
       - name: Extract changelog for this version
         id: notes
         run: |
