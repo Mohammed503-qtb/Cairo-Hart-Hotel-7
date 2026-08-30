@@ -8,6 +8,7 @@ import 'package:hotel_platform/core/utils/format.dart';
 import 'package:hotel_platform/core/utils/responsive.dart';
 import 'package:hotel_platform/data/models.dart';
 import 'package:hotel_platform/data/store.dart';
+import 'package:hotel_platform/features/admin/staff_codes_screen.dart';
 import 'package:hotel_platform/l10n/app_localizations.dart';
 import 'package:hotel_platform/shared/widgets/common_widgets.dart';
 
@@ -25,6 +26,7 @@ class _AdminShellState extends State<AdminShell> {
     _AdminDashboard(),
     _RoomTypesPage(),
     _ServicesPage(),
+    _StaffCodesLinkPage(),
     _UsersPage(),
     _AuditPage(),
   ];
@@ -38,6 +40,7 @@ class _AdminShellState extends State<AdminShell> {
       _Tab(l.dashboard, Icons.dashboard_outlined),
       _Tab(l.roomTypes, Icons.bed_outlined),
       _Tab(l.servicesCatalog, Icons.room_service_outlined),
+      _Tab(l.staffCodes, Icons.vpn_key_outlined),
       _Tab(l.users, Icons.people_outline),
       _Tab(l.auditLog, Icons.history),
     ];
@@ -76,8 +79,8 @@ class _AdminShellState extends State<AdminShell> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              app.signOutStaff();
-              context.go('/');
+              app.signOut();
+              context.go('/login');
             },
             tooltip: l.logout,
           ),
@@ -127,6 +130,104 @@ class _Tab {
   final String label;
   final IconData icon;
   const _Tab(this.label, this.icon);
+}
+
+class _StaffCodesLinkPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l = L10n.of(context);
+    final store = context.watch<HotelStore>();
+    final theme = Theme.of(context);
+    final codes = store.staffAccesses;
+    final active = codes.where((c) => c.active).length;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1000),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.vpn_key_outlined, color: theme.colorScheme.primary),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l.staffCodes,
+                    style: theme.textTheme.headlineMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l.staffCodesSub,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                KpiCard(
+                  label: l.active,
+                  value: '$active',
+                  icon: Icons.vpn_key,
+                  color: const Color(0xFF2E7D32),
+                ),
+                const SizedBox(width: 14),
+                KpiCard(
+                  label: l.inactive,
+                  value: '${codes.length - active}',
+                  icon: Icons.block,
+                  color: const Color(0xFF9E9E9E),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: FilledButton.icon(
+                onPressed: () => context.push('/admin/staff-codes'),
+                icon: const Icon(Icons.settings),
+                label: Text(l.createStaffCode),
+              ),
+            ),
+            const SizedBox(height: 18),
+            ...codes.take(5).map((sa) {
+              final roleColor = sa.role == 'admin'
+                  ? const Color(0xFF6A1B9A)
+                  : const Color(0xFFEF6C00);
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: roleColor.withOpacity(0.14),
+                    child: Icon(
+                      sa.role == 'admin'
+                          ? Icons.admin_panel_settings
+                          : Icons.support_agent,
+                      color: roleColor,
+                    ),
+                  ),
+                  title: Text(sa.staffName),
+                  subtitle: Text(
+                    '${sa.code} • ${sa.role == 'admin' ? l.admin : l.reception}',
+                  ),
+                  trailing: StatusChip(
+                    label: sa.active ? l.active : l.inactive,
+                    color: sa.active
+                        ? const Color(0xFF2E7D32)
+                        : const Color(0xFF9E9E9E),
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _AdminDashboard extends StatelessWidget {

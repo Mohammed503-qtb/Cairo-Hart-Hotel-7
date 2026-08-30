@@ -34,15 +34,15 @@ class _GuestShellState extends State<GuestShell> {
     final store = context.watch<HotelStore>();
     final stay = store.currentStayForGuest(app.guestId!);
     if (stay == null) {
-      // Session lost / closed — go back to role selection.
+      // Session lost / closed — go back to the unified login.
       return Scaffold(
         body: EmptyState(
           icon: Icons.logout,
           message: l.isArabic ? 'لا توجد إقامة نشطة' : 'No active stay',
-          action: l.switchSpace,
+          action: l.login,
           onAction: () {
-            app.signOutGuest();
-            context.go('/');
+            app.signOut();
+            context.go('/login');
           },
         ),
       );
@@ -56,8 +56,8 @@ class _GuestShellState extends State<GuestShell> {
             icon: const Icon(Icons.logout),
             tooltip: l.logout,
             onPressed: () {
-              app.signOutGuest();
-              context.go('/');
+              app.signOut();
+              context.go('/login');
             },
           ),
         ],

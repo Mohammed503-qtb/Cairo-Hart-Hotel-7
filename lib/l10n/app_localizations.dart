@@ -212,6 +212,42 @@ class L10n extends ChangeNotifier {
   String get loading => isArabic ? 'جارٍ التحميل...' : 'Loading...';
   String get saved => isArabic ? 'تم الحفظ' : 'Saved';
   String get done => isArabic ? 'تم' : 'Done';
+
+  // -- Unified login + staff access codes --
+  String get portalLogin => isArabic ? 'تسجيل الدخول' : 'Portal Login';
+  String get portalLoginSub => isArabic
+      ? 'أدخل رمز الدخول — النظام يحدد تجربتك تلقائياً'
+      : 'Enter your access code — the system determines your experience';
+  String get accessCode => isArabic ? 'رمز الدخول' : 'Access code';
+  String get accessCodeHintUnified => isArabic
+      ? 'رمز النزيل (6 أرقام) أو رمز الموظف (ADM-/REC-)'
+      : 'Guest code (6 digits) or staff code (ADM-/REC-)';
+  String get login => isArabic ? 'دخول' : 'Sign in';
+  String get invalidCodeUnified =>
+      isArabic ? 'رمز غير صالح أو منتهي الصلاحية' : 'Invalid or expired code';
+  String get demoCodes => isArabic
+      ? 'للتجربة: نزيل 204204 • استقبال REC-200 • إدارة ADM-100'
+      : 'Demo: guest 204204 • reception REC-200 • admin ADM-100';
+  String get welcomeGuestShort => isArabic ? 'مرحباً' : 'Welcome';
+  String get staffCodes => isArabic ? 'رموز الموظفين' : 'Staff Access Codes';
+  String get staffCodesSub => isArabic
+      ? 'أنشئ رموز دخول لموظفي الاستقبال والإدارة — يدخلونها في شاشة الدخول'
+      : 'Create login codes for reception & admin staff — they enter them at the login screen';
+  String get createStaffCode => isArabic ? 'إنشاء رمز جديد' : 'Create code';
+  String get staffName => isArabic ? 'اسم الموظف' : 'Staff name';
+  String get role => isArabic ? 'الدور' : 'Role';
+  String get validityDays =>
+      isArabic ? 'مدة الصلاحية (أيام)' : 'Validity (days)';
+  String get revoke => isArabic ? 'إلغاء' : 'Revoke';
+  String get regenerate => isArabic ? 'تجديد الرمز' : 'Regenerate';
+  String get active => isArabic ? 'نشط' : 'Active';
+  String get inactive => isArabic ? 'ملغى' : 'Revoked';
+  String get lastUsed => isArabic ? 'آخر استخدام' : 'Last used';
+  String get never => isArabic ? 'أبداً' : 'Never';
+  String get expiresAt => isArabic ? 'تنتهي في' : 'Expires';
+  String get codeCreated => isArabic
+      ? 'تم إنشاء الرمز ✓ شاركه مع الموظف'
+      : 'Code created ✓ share it with the staff member';
 }
 
 class _L10nScope extends InheritedWidget {

@@ -60,14 +60,7 @@ class _WebsiteShellState extends State<WebsiteShell> {
     );
 
     AppBar topBar = AppBar(
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        onPressed: () {
-          app.setSpace(AppSpace.website);
-          context.go('/');
-        },
-        tooltip: l.switchSpace,
-      ),
+      automaticallyImplyLeading: false,
       title: Row(
         children: [
           Icon(Icons.hotel, color: Theme.of(context).colorScheme.primary),
@@ -126,6 +119,15 @@ class _WebsiteShellState extends State<WebsiteShell> {
                   .toList(),
             ),
           ),
+        const SizedBox(width: 4),
+        // Portal login — the single entry to guest / reception / admin.
+        // Access is determined by the code entered, not by a role button.
+        FilledButton.tonalIcon(
+          onPressed: () => context.push('/login'),
+          icon: const Icon(Icons.lock_open_outlined, size: 18),
+          label: Text(l.portalLogin, style: const TextStyle(fontSize: 13)),
+        ),
+        const SizedBox(width: 4),
         IconButton(
           icon: const Icon(Icons.translate),
           onPressed: () => app.toggleLocale(),

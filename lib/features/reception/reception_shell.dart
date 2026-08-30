@@ -82,8 +82,8 @@ class _ReceptionShellState extends State<ReceptionShell> {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              app.signOutStaff();
-              context.go('/');
+              app.signOut();
+              context.go('/login');
             },
             tooltip: l.logout,
           ),

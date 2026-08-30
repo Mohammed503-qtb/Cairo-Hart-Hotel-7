@@ -1,5 +1,5 @@
 name: hotel_platform
-description: "Lumière Grand Hotel — integrated hotel platform (public booking site, guest app, reception/PMS, admin) built with Flutter for Web, Android, iOS, macOS, Windows and Linux."
+description: "Integrated Hotel Booking, PMS, Guest App & Reception Operations Platform"
 publish_to: 'none'
 version: 1.0.0+1
 

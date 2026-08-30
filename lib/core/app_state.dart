@@ -69,7 +69,24 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // -- Staff login (demo: any username works) --
+  // -- Staff login via access code (PLAN §4.1, §37) --
+  /// Logs a staff member in by validating their admin-generated access code.
+  /// Returns the role ('admin' | 'reception') on success, null on failure.
+  String? loginStaffByCode(String code) {
+    final sa = store.validateStaffCode(code);
+    if (sa == null) return null;
+    // Map the staff access to one of the seeded AppUser records by role.
+    final user = store.users.firstWhere(
+      (u) => u.role == sa.role,
+      orElse: () => store.users.first,
+    );
+    _staffUserId = user.id;
+    _space = sa.role == 'admin' ? AppSpace.admin : AppSpace.reception;
+    notifyListeners();
+    return sa.role;
+  }
+
+  // Legacy: direct role login (kept for demo deep-links only)
   bool loginStaff(String role) {
     final user = store.users.firstWhere((u) => u.role == role);
     _staffUserId = user.id;
@@ -96,7 +113,53 @@ class AppState extends ChangeNotifier {
     _space = AppSpace.guest;
   }
 
+  // -- Unified login (PLAN §13 + §4.1) --
+  /// The single entry point for the unified login screen. Detects whether the
+  /// entered code is a guest access code (stay-tied 6-digit) or a staff access
+  /// code (admin-generated, role-embedded), then activates the right session.
+  /// Returns the resulting AppSpace, or null if the code is invalid.
+  AppSpace? loginWithCode(String code) {
+    final trimmed = code.trim();
+    if (trimmed.isEmpty) return null;
+    // Try guest access code first (PLAN §13.2).
+    if (activateGuest(trimmed)) return AppSpace.guest;
+    // Try staff access code (PLAN §4.1).
+    final role = loginStaffByCode(trimmed);
+    if (role == 'admin') return AppSpace.admin;
+    if (role == 'reception') return AppSpace.reception;
+    return null;
+  }
+
+  /// Silent variant of loginWithCode for use inside build phases.
+  void loginWithCodeSilent(String code) {
+    final trimmed = code.trim();
+    if (trimmed.isEmpty) return;
+    final stay = store.validateAccessCode(trimmed);
+    if (stay != null) {
+      _guestId = stay.guestId;
+      _space = AppSpace.guest;
+      return;
+    }
+    final sa = store.validateStaffCode(trimmed);
+    if (sa != null) {
+      final user = store.users.firstWhere(
+        (u) => u.role == sa.role,
+        orElse: () => store.users.first,
+      );
+      _staffUserId = user.id;
+      _space = sa.role == 'admin' ? AppSpace.admin : AppSpace.reception;
+    }
+  }
+
   void signOutStaff() {
+    _staffUserId = null;
+    _space = AppSpace.website;
+    notifyListeners();
+  }
+
+  /// Sign out any session (guest or staff) — used by the unified logout.
+  void signOut() {
+    _guestId = null;
     _staffUserId = null;
     _space = AppSpace.website;
     notifyListeners();
