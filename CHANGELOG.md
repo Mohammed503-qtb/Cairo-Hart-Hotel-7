@@ -4,8 +4,58 @@ All notable changes to the **Lumière Grand Hotel Platform** are documented here
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] — 2026-08-30
 
+### Changed — Complete restructure: two distinct, integrated experiences
+This release implements the full separation defined by PLAN_WEBSITE.md and
+PLAN_MOBILE-APK.md — the web binary and the mobile binary are now two complete,
+distinct applications sharing one backend/data model.
+
+### Website (PLAN_WEBSITE.md) — pure public website
+- **No login, no guest app, no reception, no admin on the web.** The web build
+  registers ONLY website routes; navigating to /login, /guest, /reception, or
+  /admin returns 404.
+- **Complete public experience**: Home, Rooms, Room Details, Facilities,
+  About, Gallery, Location, Contact — all with proper navigation, hero
+  sections, SEO-friendly content.
+- **8-step booking engine**: Search → Availability → Room Selection → Guest
+  Info → Booking Options → Review → Payment → Confirmation.
+- **Manage Booking** (PLAN_WEBSITE §47): guests retrieve reservations using
+  booking reference + verification value (phone OR email). The reference alone
+  is NEVER enough.
+- **New pages**: Facilities (6 facility cards with hours), About (hotel story
+  + values), Location (map placeholder + directions), Manage Booking (lookup
+  form + reservation detail).
+- ShellRoute architecture: WebsiteShell wraps every page with the header
+  (nav + book-now + manage-booking + language/theme) and footer.
+
+### Mobile App (PLAN_MOBILE-APK.md) — code-gated, three personas
+- **Code format per PLAN §5**: Guest=H{6digits}{2checksum}, Reception=
+  R{6digits}{2checksum}, Admin=A{6digits}{2checksum}. The prefix (H/R/A)
+  determines the persona — there is no role-selection UI.
+- **Website tracking codes** (HTL-YYYY-NNNNNN) are explicitly NOT valid for
+  app login — a warning is shown on the login screen.
+- **Login screen** updated: prefix hint, live type detection, demo chips
+  (H834729X7 / R492671M3 / A371849L9), website-code warning.
+- **Admin → Staff Codes**: generate/revoke/regenerate codes in the new format.
+- Seeded: Mohamed's guest code H834729X7, Layla's reception R492671M3, Omar's
+  admin A371849L9.
+
+### Shared Backend (one data model, two surfaces)
+- Store unchanged in domain logic; added `lookupReservation(ref, verification)`
+  for the website Manage-Booking flow.
+- `Fmt` code generators: `guestCode()`, `receptionCode()`, `adminCode()`,
+  `codeType(code)` for prefix-based routing.
+- Platform selection at build time: `kIsWeb` → web routes only; native → app
+  routes only. Same source code, two binaries, two experiences.
+
+### Router
+- Split into `_webRoutes` (website-only) and `_appRoutes` (app-only), selected
+  by `kIsWeb` at router construction.
+- Web initial location: `/` (public website).
+- App initial location: `/login` (code entry).
+
+## [1.1.0] — 2026-08-30
 ## [1.1.0] — 2026-08-30
 
 ### Changed — Architecture (per PLAN §57, §58)

@@ -248,6 +248,24 @@ class L10n extends ChangeNotifier {
   String get codeCreated => isArabic
       ? 'تم إنشاء الرمز ✓ شاركه مع الموظف'
       : 'Code created ✓ share it with the staff member';
+
+  // -- Website pages (PLAN_WEBSITE) --
+  String get facilities => isArabic ? 'المرافق' : 'Facilities';
+  String get about => isArabic ? 'عن الفندق' : 'About';
+  String get location => isArabic ? 'الموقع' : 'Location';
+  String get manageBooking => isArabic ? 'إدارة الحجز' : 'Manage Booking';
+
+  // -- App entry (PLAN_MOBILE-APK §5) --
+  String get appLoginTitle => isArabic ? 'تسجيل الدخول للتطبيق' : 'App Sign In';
+  String get appLoginSub => isArabic
+      ? 'أدخل رمز الدخول — الحرف الأول يحدد تجربتك (H=نزيل، R=استقبال، A=إدارة)'
+      : 'Enter your access code — the prefix determines your experience (H=Guest, R=Reception, A=Admin)';
+  String get demoCodesApp => isArabic
+      ? 'للتجربة: نزيل H834729X7 • استقبال R492671M3 • إدارة A371849L9'
+      : 'Demo: guest H834729X7 • reception R492671M3 • admin A371849L9';
+  String get websiteOnlyCodeWarn => isArabic
+      ? 'رموز الحجز (HTL-...) تُستخدم لإدارة الحجز على الموقع فقط، وليس للدخول للتطبيق'
+      : 'Booking references (HTL-...) are for website booking management only, not app login';
 }
 
 class _L10nScope extends InheritedWidget {

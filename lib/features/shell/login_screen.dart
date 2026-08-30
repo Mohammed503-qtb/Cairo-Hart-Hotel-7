@@ -165,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    l.portalLoginSub,
+                    l.appLoginSub,
                     textAlign: TextAlign.center,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurface.withOpacity(0.6),
@@ -184,7 +184,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       letterSpacing: 2,
                     ),
                     decoration: InputDecoration(
-                      hintText: l.accessCodeHintUnified,
+                      hintText: l.isArabic
+                          ? 'H834729X7 / R492671M3 / A371849L9'
+                          : 'H834729X7 / R492671M3 / A371849L9',
                       prefixIcon: const Icon(Icons.password_outlined),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
@@ -241,9 +243,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              Text(
-                                l.demoCodes,
-                                style: theme.textTheme.bodyMedium,
+                              Expanded(
+                                child: Text(
+                                  l.demoCodesApp,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
                               ),
                             ],
                           ),
@@ -253,31 +257,51 @@ class _LoginScreenState extends State<LoginScreen> {
                             runSpacing: 6,
                             children: [
                               _DemoChip(
-                                label: '204204',
+                                label: 'H834729X7',
                                 role: l.guestApp,
                                 color: const Color(0xFF2E7D32),
                                 onTap: () {
-                                  _codeCtrl.text = '204204';
+                                  _codeCtrl.text = 'H834729X7';
                                   _detect();
                                 },
                               ),
                               _DemoChip(
-                                label: 'REC-200',
+                                label: 'R492671M3',
                                 role: l.reception,
                                 color: const Color(0xFFEF6C00),
                                 onTap: () {
-                                  _codeCtrl.text = 'REC-200';
+                                  _codeCtrl.text = 'R492671M3';
                                   _detect();
                                 },
                               ),
                               _DemoChip(
-                                label: 'ADM-100',
+                                label: 'A371849L9',
                                 role: l.admin,
                                 color: const Color(0xFF6A1B9A),
                                 onTap: () {
-                                  _codeCtrl.text = 'ADM-100';
+                                  _codeCtrl.text = 'A371849L9';
                                   _detect();
                                 },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.warning_amber,
+                                color: const Color(0xFFEF6C00),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  l.websiteOnlyCodeWarn,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurface
+                                        .withOpacity(0.6),
+                                  ),
+                                ),
                               ),
                             ],
                           ),

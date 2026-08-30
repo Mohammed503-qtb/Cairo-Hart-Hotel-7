@@ -34,7 +34,7 @@ class ConfirmationScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         leading: IconButton(
           icon: const Icon(Icons.home_outlined),
-          onPressed: () => context.go('/website'),
+          onPressed: () => context.go('/'),
         ),
         title: Text(l.bookingConfirmed),
       ),
@@ -131,7 +131,7 @@ class ConfirmationScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () => context.go('/website'),
+                      onPressed: () => context.go('/'),
                       icon: const Icon(Icons.home_outlined),
                       label: Text(
                         l.isArabic ? 'العودة للرئيسية' : 'Back to home',
@@ -141,7 +141,7 @@ class ConfirmationScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: FilledButton.icon(
-                      onPressed: () => context.push('/website/booking'),
+                      onPressed: () => context.push('/booking'),
                       icon: const Icon(Icons.add),
                       label: Text(l.bookAnother),
                     ),

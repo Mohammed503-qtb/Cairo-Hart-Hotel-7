@@ -180,7 +180,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
       paymentMethod: _method,
       amountPaid: _method == PaymentMethod.payAtHotel ? 0 : 0,
     );
-    context.replace('/website/confirmation/${res.id}');
+    context.replace('/booking/confirmation/${res.id}');
   }
 
   // ---- step body ----

@@ -128,7 +128,7 @@ class RoomDetailScreen extends StatelessWidget {
                         ),
                         FilledButton.icon(
                           onPressed: () => context.push(
-                            '/website/booking',
+                            '/booking',
                             extra: {
                               'roomTypeId': type.id,
                               'adults': type.defaultAdults,
