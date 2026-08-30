@@ -34,7 +34,7 @@ jobs:
       - run: flutter pub get
       - name: Build web (release, GitHub Pages base-href)
         run: |
-          flutter build web --release --base-href "${{ github.event.repository.name }}/"
+          flutter build web --release --base-href "/${{ github.event.repository.name }}/"
           touch build/web/.nojekyll
       - name: Archive web build
         run: |
@@ -135,27 +135,20 @@ jobs:
           xcode-version: latest-stable
       - run: flutter pub get
 
-      - name: Import iOS signing certificate (if provided)
-        if: ${{ env.IOS_P12_BASE64 != '' }}
-        uses: apple-actions/import-codesign-certificate@v2
-        with:
-          p12-file-base64: ${{ env.IOS_P12_BASE64 }}
-          p12-password: ${{ env.IOS_P12_PASSWORD }}
-
-      - name: Install provisioning profile (if provided)
-        run: |
-          if [ -n "$IOS_PROVISIONING_PROFILE_BASE64" ]; then
-            mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
-            echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 -d > "$HOME/Library/MobileDevice/Provisioning Profiles/Runner.mobileprovision"
-          fi
-
-      - name: Build iOS (no-codesign fallback if no signing secrets)
+      - name: Build iOS (no-codesign — produces .app for archiving)
         run: flutter build ios --release --no-codesign
 
-      - name: Build signed IPA (if signing secrets present)
-        if: ${{ env.IOS_P12_BASE64 != '' }}
+      - name: Archive unsigned .app into zip (for sideloading/manual signing)
         run: |
-          flutter build ipa --release --export-options-plist=ios/ExportOptions.plist || true
+          # Package the built .app into a zip for distribution as an unsigned artifact.
+          APP_DIR=$(find build/ios -name "Runner.app" -type d | head -1)
+          if [ -n "$APP_DIR" ]; then
+            cd "$(dirname "$APP_DIR")"
+            zip -r "$RUNNER_TEMP/ios-unsigned.zip" Runner.app
+            echo "Packaged unsigned .app"
+          else
+            echo "Runner.app not found — skipping archive"
+          fi
 
       - name: Compute SHA-256
         run: |
@@ -164,10 +157,8 @@ jobs:
           fi
       - uses: actions/upload-artifact@v4
         with:
-          name: ios-release
-          path: |
-            build/ios/ipa/*.ipa
-            ${{ runner.temp }}/ipa.sha256
+          name: ios-unsigned
+          path: ${{ runner.temp }}/ios-unsigned.zip
           if-no-files-found: ignore
           retention-days: 14
 
@@ -232,8 +223,8 @@ jobs:
           cp "$RUNNER_TEMP"/artifacts/android-release/*.aab "$STAGE/" 2>/dev/null || true
           cp "$RUNNER_TEMP"/artifacts/android-release/apk.sha256 "$STAGE/" 2>/dev/null || true
           cp "$RUNNER_TEMP"/artifacts/android-release/aab.sha256 "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/ios-release/*.ipa "$STAGE/" 2>/dev/null || true
-          cp "$RUNNER_TEMP"/artifacts/ios-release/ipa.sha256 "$STAGE/" 2>/dev/null || true
+          cp "$RUNNER_TEMP"/artifacts/ios-unsigned/ios-unsigned.zip "$STAGE/" 2>/dev/null || true
+          
           cp "$RUNNER_TEMP"/artifacts/linux-x64/linux-x64.zip "$STAGE/" 2>/dev/null || true
           cd "$STAGE" && sha256sum * > checksums-all.sha256 2>/dev/null || true
           ls -la "$STAGE"
